@@ -1,11 +1,13 @@
 # database.py
+import toml
+
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = "postgresql://Eaios:1234@localhost/spacedb"
+secrets = toml.load("secrets.toml")
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(secrets['DATABASE_URL'])
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()

@@ -1,18 +1,16 @@
 # main.py
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import Column, Integer, String
 from database import SessionLocal, engine, Base
 from pydantic import BaseModel
 
-# main.py에 추가
-from fastapi.middleware.cors import CORSMiddleware
-
 app = FastAPI()
 
 origins = [
-    "http://localhost:5000",  # Svelte 기본 포트
-    "http://localhost:3000",  # Svelte 다른 포트 사용 시
+    # "http://localhost:5000",  # Svelte 기본 포트
+    # "http://localhost:3000",  # Svelte 다른 포트 사용 시
     "http://localhost:8080",  # Svelte 다른 포트 사용 시
     # 필요에 따라 다른 도메인 추가
 ]
