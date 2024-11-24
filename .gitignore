@@ -2,7 +2,7 @@
 __pycache__/
 
 # KEY
-secrets.toml
+.secrets.toml
 
 # Virtual environments
 venv/
