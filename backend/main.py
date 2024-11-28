@@ -1,8 +1,8 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine, Base
-from operations import administrators, customers, flights, maintenance_records, maintenance_tasks, mechanics, pilot_flights, pilots, reservations, spaceships, user_roles
+from operations import administrators, customers, flights, maintenance_records, maintenance_tasks, mechanics, pilot_flights, pilots, reservations, spaceships, user_roles, licenses
 from models import (
     PilotCreate, PilotResponse, PilotUpdateRequest,
     FlightCreate, FlightResponse,
@@ -15,6 +15,7 @@ from models import (
     MechanicCreate, MechanicResponse,
     AdministratorCreate, AdministratorResponse, 
     UserRoleCreate, UserRoleResponse,
+    LicenseResponse, LicenseCreateRequest
 )
 
 app = FastAPI() # API 엔드포인트와 설정을 이 객체에 연결
@@ -75,6 +76,8 @@ def delete_pilot_endpoint(pilot_id: int, db: Session = Depends(get_db)):
 @app.patch("/pilots/{pilot_id}")
 def update_pilot_information_endpoint(pilot_id: int, pilot_data: PilotUpdateRequest, db: Session = Depends(get_db)):
     return pilots.update_pilot_information(db, pilot_id, pilot_data)
+
+# 면허정보 갱신
 
 # ---------------------------------------------------
 # Flights Endpoints
@@ -162,14 +165,14 @@ def delete_maintenance_task_endpoint(task_id: int, db: Session = Depends(get_db)
     return maintenance_tasks.delete_maintenance_task(db, task_id)
 
 # 유지 보수 작업 할당 조회, 작업 유형, 우선순위, 마감일별로 필터링하며 마감일 기준으로 정렬
-@app.get("/maintenance_tasks/", response_model=List[MaintenanceTaskResponse])
-def read_maintenance_tasks(
-    task_type: Optional[str] = Query(None, description="작업 유형 (정기 점검, 수리 등)"),
-    priority: Optional[int] = Query(None, description="작업 우선순위"),
-    deadline: Optional[str] = Query(None, description="작업 마감일 (YYYY-MM-DD 형식)"),
-    db: Session = Depends(get_db)
-):
-    return get_maintenance_tasks(db, task_type, priority, deadline)
+# @app.get("/maintenance_tasks/", response_model=List[MaintenanceTaskResponse])
+# def read_maintenance_tasks(
+#     task_type: Optional[str] = Query(None, description="작업 유형 (정기 점검, 수리 등)"),
+#     priority: Optional[int] = Query(None, description="작업 우선순위"),
+#     deadline: Optional[str] = Query(None, description="작업 마감일 (YYYY-MM-DD 형식)"),
+#     db: Session = Depends(get_db)
+# ):
+#     return get_maintenance_tasks(db, task_type, priority, deadline)
 
 # ---------------------------------------------------
 # MaintenanceRecords Endpoints
@@ -290,3 +293,21 @@ def update_user_role_endpoint(user_role_id: int, user_role: UserRoleCreate, db: 
 @app.delete("/user_roles/{user_role_id}")
 def delete_user_role_endpoint(user_role_id: int, db: Session = Depends(get_db)):
     return user_roles.delete_user_role(db, user_role_id)
+
+# ---------------------------------------------------
+# Licenses Endpoints
+# ---------------------------------------------------
+
+@app.post("/pilots/{pilot_id}/licenses", response_model=LicenseResponse)
+def add_license_endpoint(pilot_id: int, license_data: LicenseCreateRequest = Depends(), license_file: UploadFile = File(...), db: Session = Depends(get_db)):
+    """
+    파일럿의 새로운 라이선스 추가 (PDF 포함)
+    """
+    return licenses.add_license(db, pilot_id, license_data, license_file)
+
+@app.patch("/licenses/{license_id}/status", response_model=LicenseResponse)
+def update_license_status_endpoint(license_id: int, new_status: str, db: Session = Depends(get_db)):
+    """
+    라이선스 상태 변경 (허가, 갱신 중, 만료)
+    """
+    return licenses.update_license_status(db, license_id, new_status)

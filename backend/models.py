@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, Enum, ForeignKey, Float, DateTime
+from sqlalchemy import Column, Integer, String, Date, Enum, ForeignKey, Float, DateTime, LargeBinary
 from sqlalchemy.orm import relationship
 from database import Base
 from pydantic import BaseModel
@@ -15,8 +15,8 @@ class Pilots(Base): # 조종사 테이블
     name = Column(String, nullable=False)
     contact_info = Column(String)
     emergency_contact = Column(String)
-    license_number = Column(String, nullable=False)
-    license_expiry_date = Column(Date, nullable=False)
+
+    licenses = relationship("Licenses", back_populates="pilot")  # 라이선스와 관계 설정
 
 class Flights(Base): # 비행편 테이블
     __tablename__ = "flights"
@@ -106,6 +106,16 @@ class PilotUpdateRequest(BaseModel): # 파일럿 개인정보 수정용 테이�
     name: Optional[str] = None
     contact_info: Optional[str] = None
     emergency_contact: Optional[str] = None
+
+class Licenses(Base):  # 라이선스 테이블
+    __tablename__ = "licenses"
+    pilot_id = Column(Integer, ForeignKey("pilots.pilot_id"), nullable=False)
+    license_status = Column(Enum("허가", "갱신 중", "만료", name="license_status"), nullable=False)
+    license_number = Column(String, nullable=False)
+    license_expiry_date = Column(Date, nullable=False)
+    license_document = Column(LargeBinary, nullable=True)  # PDF 파일 저장
+
+    pilot = relationship("Pilots", back_populates="licenses") 
 
 '''
 Pydantic 모델 정의
@@ -284,6 +294,21 @@ class AdministratorResponse(BaseModel):
     name: str
     contact_info: Optional[str]
     role: str
+
+    class Config:
+        from_attributes = True
+
+# License
+class LicenseCreateRequest(BaseModel):  # 라이선스 생성 요청
+    license_number: str
+    license_expiry_date: date
+
+class LicenseResponse(BaseModel):  # 응답 데이터
+    license_id: int
+    pilot_id: int
+    license_number: str
+    license_expiry_date: date
+    license_status: str
 
     class Config:
         from_attributes = True

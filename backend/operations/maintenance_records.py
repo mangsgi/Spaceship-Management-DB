@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 from models import MaintenanceRecords, MaintenanceRecordCreate, MaintenanceRecordResponse
 from fastapi import HTTPException
-from typing import Optional, List
 
 # CREATE
 def create_maintenance_record(db: Session, record: MaintenanceRecordCreate) -> MaintenanceRecordResponse:
