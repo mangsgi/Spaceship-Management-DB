@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from models import MaintenanceRecords, MaintenanceRecordCreate, MaintenanceRecordResponse
 from fastapi import HTTPException
+from typing import Optional, List
 
 # CREATE
 def create_maintenance_record(db: Session, record: MaintenanceRecordCreate) -> MaintenanceRecordResponse:
@@ -10,7 +11,7 @@ def create_maintenance_record(db: Session, record: MaintenanceRecordCreate) -> M
     db.refresh(db_record)
     return db_record
 
-# READ (모든 데이터 조회)
+# READ ALL
 def get_all_maintenance_records(db: Session) -> list[MaintenanceRecordResponse]:
     return db.query(MaintenanceRecords).all()
 

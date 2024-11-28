@@ -77,3 +77,11 @@ from .administrators import (
     update_administrator,
     delete_administrator
 )
+
+# UserRoles CRUD
+from .user_roles import (
+    create_user_role,
+    get_all_user_roles,
+    update_user_role,
+    delete_user_role
+)

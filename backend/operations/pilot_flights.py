@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from models import PilotFlights, PilotFlightCreate, PilotFlightResponse
+from models import PilotFlights, PilotFlightCreate, PilotFlightResponse, Pilots
 from fastapi import HTTPException
 
 # CREATE
@@ -33,3 +33,17 @@ def delete_pilot_flight(db: Session, pilot_flight_id: int):
     db.delete(db_pilot_flight)
     db.commit()
     return {"message": f"Pilot Flight {pilot_flight_id} deleted successfully"}
+
+# GET Pilot's schedule
+def read_pilot_flights(db: Session, pilot_id: int) -> list[PilotFlightResponse]:
+    pilot_exists = db.query(Pilots).filter(Pilots.pilot_id == pilot_id).first()
+    if not pilot_exists:
+        raise HTTPException(status_code=404, detail="해당 조종사가 존재하지 않습니다.")
+    schedules = (
+        db.query(PilotFlights)
+        .filter(PilotFlights.pilot_id == pilot_id)
+        .all()
+    )
+    if not schedules:
+        return {"message": "현재 할당된 스케줄이 없습니다."}
+    return {"schedules": schedules}

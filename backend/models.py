@@ -102,6 +102,11 @@ class Administrators(Base): # 관리자 테이블
     contact_info = Column(String)
     role = Column(String, nullable=False)
 
+class PilotUpdateRequest(BaseModel): # 파일럿 개인정보 수정용 테이블
+    name: Optional[str] = None
+    contact_info: Optional[str] = None
+    emergency_contact: Optional[str] = None
+
 '''
 Pydantic 모델 정의
 API 요청 시 데이터를 검증하고 구조화

@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from models import MaintenanceTasks, MaintenanceTaskCreate, MaintenanceTaskResponse
 from fastapi import HTTPException
+from typing import Optional, List
 
 # CREATE
 def create_maintenance_task(db: Session, task: MaintenanceTaskCreate) -> MaintenanceTaskResponse:
@@ -33,3 +34,18 @@ def delete_maintenance_task(db: Session, task_id: int):
     db.delete(db_task)
     db.commit()
     return {"message": f"Maintenance Task {task_id} deleted successfully"}
+
+# Retrieve MaintenaceTasks filtered task_type, priority, deadline
+def get_maintenance_tasks(db: Session, task_type: Optional[str] = None, priority: Optional[int] = None, deadline: Optional[str] = None) -> List[MaintenanceTaskResponse]:
+    query = db.query(MaintenanceTasks)
+
+    if task_type:
+        query = query.filter(MaintenanceTasks.task_type == task_type)
+    if priority:
+        query = query.filter(MaintenanceTasks.priority == priority)
+    if deadline:
+        query = query.filter(MaintenanceTasks.deadline <= deadline)
+
+    query = query.order_by(MaintenanceTasks.deadline)
+
+    return query.all()

@@ -10,7 +10,7 @@ def create_flight(db: Session, flight: FlightCreate) -> FlightResponse:
     db.refresh(db_flight)
     return db_flight
 
-# READ
+# READ ALL
 def get_all_flights(db: Session) -> list[FlightResponse]:
     return db.query(Flights).all()
 
