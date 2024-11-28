@@ -127,9 +127,9 @@ def delete_spaceship_endpoint(spaceship_id: int, db: Session = Depends(get_db)):
 def create_pilot_flight_endpoint(pilot_flight: PilotFlightCreate, db: Session = Depends(get_db)):
     return pilot_flights.create_pilot_flight(db, pilot_flight)
 
-@app.get("/pilot_flights/{pilot__id}", response_model=list[PilotFlightResponse])
-def read_all_pilot_flights_endpoint(db: Session = Depends(get_db)):
-    return pilot_flights.get_all_pilot_flights(db)
+# @app.get("/pilot_flights/{pilot__id}", response_model=list[PilotFlightResponse])
+# def read_all_pilot_flights_endpoint(db: Session = Depends(get_db)):
+#     return pilot_flights.get_all_pilot_flights(db)
 
 @app.put("/pilot_flights/{pilot_flight_id}", response_model=PilotFlightResponse)
 def update_pilot_flight_endpoint(pilot_flight_id: int, pilot_flight: PilotFlightCreate, db: Session = Depends(get_db)):
@@ -141,8 +141,8 @@ def delete_pilot_flight_endpoint(pilot_flight_id: int, db: Session = Depends(get
 
 # Pilots - 자신에게 할당된 비행 일정 조회, TODO 현재 진행중인 것만 볼 수 있도록 선택하는 방향으로 하려면.. 추가해야 함
 @app.get("/pilot_flights/{pilot__id}", response_model=list[PilotFlightResponse])
-def read_pilot_flights_endpoint(db: Session = Depends(get_db)):
-    return pilot_flights.get_pilot_flights(db)
+def read_pilot_flights_endpoint(pilot_id: int, db: Session = Depends(get_db)):
+    return pilot_flights.read_pilot_flights(db, pilot_id)
 
 # ---------------------------------------------------
 # MaintenanceTasks Endpoints
@@ -298,16 +298,12 @@ def delete_user_role_endpoint(user_role_id: int, db: Session = Depends(get_db)):
 # Licenses Endpoints
 # ---------------------------------------------------
 
+# 파일럿의 새로운 라이선스 추가 (PDF 포함)
 @app.post("/pilots/{pilot_id}/licenses", response_model=LicenseResponse)
 def add_license_endpoint(pilot_id: int, license_data: LicenseCreateRequest = Depends(), license_file: UploadFile = File(...), db: Session = Depends(get_db)):
-    """
-    파일럿의 새로운 라이선스 추가 (PDF 포함)
-    """
     return licenses.add_license(db, pilot_id, license_data, license_file)
 
-@app.patch("/licenses/{license_id}/status", response_model=LicenseResponse)
+# 라이선스 상태 변경 (허가, 갱신 중, 만료)
+@app.patch("/licenses/{license_id}/status", response_model=LicenseResponse) # 관리자가 진행
 def update_license_status_endpoint(license_id: int, new_status: str, db: Session = Depends(get_db)):
-    """
-    라이선스 상태 변경 (허가, 갱신 중, 만료)
-    """
     return licenses.update_license_status(db, license_id, new_status)

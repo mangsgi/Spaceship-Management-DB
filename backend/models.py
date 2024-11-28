@@ -11,7 +11,7 @@ from typing import Optional
 
 class Pilots(Base): # 조종사 테이블
     __tablename__ = "pilots" # pilots 클래스를 pilots table에 매핑
-    pilot_id = Column(Integer, primary_key=True, index=True)
+    pilot_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String, nullable=False)
     contact_info = Column(String)
     emergency_contact = Column(String)
@@ -102,13 +102,9 @@ class Administrators(Base): # 관리자 테이블
     contact_info = Column(String)
     role = Column(String, nullable=False)
 
-class PilotUpdateRequest(BaseModel): # 파일럿 개인정보 수정용 테이블
-    name: Optional[str] = None
-    contact_info: Optional[str] = None
-    emergency_contact: Optional[str] = None
-
 class Licenses(Base):  # 라이선스 테이블
     __tablename__ = "licenses"
+    license_id = Column(Integer, primary_key=True, index=True, autoincrement=True)  # Primary Key가 필수여서..
     pilot_id = Column(Integer, ForeignKey("pilots.pilot_id"), nullable=False)
     license_status = Column(Enum("허가", "갱신 중", "만료", name="license_status"), nullable=False)
     license_number = Column(String, nullable=False)
@@ -127,20 +123,21 @@ class PilotCreate(BaseModel): # 새 Pilot을 생성할 때 사용하는 Request 
     name: str
     contact_info: str
     emergency_contact: str
-    license_number: str
-    license_expiry_date: date
 
 class PilotResponse(BaseModel): # 데이터베이스 ORM 객체를 반환할 때 사용하는 Response 모델
     pilot_id: int
     name: str
     contact_info: str
     emergency_contact: str
-    license_number: str
-    license_expiry_date: date
 
     class Config: # Config 설정
         from_attributes = True # SQLAlchemy ORM 객체를 Pydantic 모델로 변환할 때 사용
-        
+
+class PilotUpdateRequest(BaseModel): # 파일럿 개인정보 수정용 테이블
+    name: Optional[str] = None
+    contact_info: Optional[str] = None
+    emergency_contact: Optional[str] = None
+
 class FlightCreate(BaseModel):
     spaceship_id: int
     departure_location: str
@@ -298,9 +295,9 @@ class AdministratorResponse(BaseModel):
     class Config:
         from_attributes = True
 
-# License
+# Licenses
 class LicenseCreateRequest(BaseModel):  # 라이선스 생성 요청
-    license_number: str
+    license_number: int
     license_expiry_date: date
 
 class LicenseResponse(BaseModel):  # 응답 데이터
