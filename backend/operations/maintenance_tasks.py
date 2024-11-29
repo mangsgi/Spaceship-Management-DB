@@ -43,16 +43,6 @@ def update_maintenance_task(
     db.refresh(task)
     return MaintenanceTaskResponse.model_validate(task)
 
-
-# DELETE
-def delete_maintenance_task(db: Session, task_id: int):
-    db_task = db.query(MaintenanceTasks).filter(MaintenanceTasks.task_id == task_id).first()
-    if not db_task:
-        raise HTTPException(status_code=404, detail="Maintenance Task not found")
-    db.delete(db_task)
-    db.commit()
-    return {"message": f"Maintenance Task {task_id} deleted successfully"}
-
 # Mechanic - 유지 보수 작업 할당 조회
 def get_maintenance_tasks(db: Session, task_type: Optional[str] = None, priority: Optional[int] = None, deadline: Optional[str] = None) -> List[MaintenanceTaskResponse]:
     query = db.query(MaintenanceTasks)

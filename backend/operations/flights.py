@@ -16,10 +16,6 @@ def create_flight(db: Session, flight: FlightCreate) -> FlightResponse:
         db.rollback()
         raise HTTPException(status_code=400, detail=f"비행 일정 생성 중 오류 발생: {str(e)}")
 
-# READ ALL
-def get_all_flights(db: Session) -> list[FlightResponse]:
-    return db.query(Flights).all()
-
 # Administrator - 비행 일정 수정 
 def update_flight_information(
     db: Session, flight_id: int, flight_data: FlightUpdateRequest
