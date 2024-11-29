@@ -34,7 +34,7 @@ def delete_pilot(db: Session, pilot_id: int):
     db.commit()
     return {"message": f"Pilot {pilot_id} deleted successfully"}
 
-# UPDATE Pilot Information
+# Pilot - 본인의 개인정보 수정
 def update_pilot_information(db: Session, pilot_id: int, pilot_data: PilotUpdateRequest):
     pilot = db.query(Pilots).filter(Pilots.pilot_id == pilot_id).first()
     if not pilot:

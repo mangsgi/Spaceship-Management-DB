@@ -11,7 +11,7 @@ from typing import Optional
 
 class Pilots(Base): # 조종사 테이블
     __tablename__ = "pilots" # pilots 클래스를 pilots table에 매핑
-    pilot_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    pilot_id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     contact_info = Column(String)
     emergency_contact = Column(String)
@@ -104,7 +104,7 @@ class Administrators(Base): # 관리자 테이블
 
 class Licenses(Base):  # 라이선스 테이블
     __tablename__ = "licenses"
-    license_id = Column(Integer, primary_key=True, index=True, autoincrement=True)  # Primary Key가 필수여서..
+    license_id = Column(Integer, primary_key=True, index=True)  # Primary Key가 필수여서..
     pilot_id = Column(Integer, ForeignKey("pilots.pilot_id"), nullable=False)
     license_status = Column(Enum("허가", "갱신 중", "만료", name="license_status"), nullable=False)
     license_number = Column(String, nullable=False)
@@ -119,6 +119,7 @@ API 요청 시 데이터를 검증하고 구조화
 Create와 Response로 나눔
 '''
 
+# Pilots
 class PilotCreate(BaseModel): # 새 Pilot을 생성할 때 사용하는 Request 모델
     name: str
     contact_info: str
@@ -138,6 +139,7 @@ class PilotUpdateRequest(BaseModel): # 파일럿 개인정보 수정용 테이�
     contact_info: Optional[str] = None
     emergency_contact: Optional[str] = None
 
+# Flights
 class FlightCreate(BaseModel):
     spaceship_id: int
     departure_location: str
@@ -158,6 +160,13 @@ class FlightResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class FlightUpdateRequest(BaseModel): # 비행 일정 수정용 테이블
+    departure_location: Optional[str] = None
+    arrival_location: Optional[str] = None
+    departure_time: Optional[datetime] = None
+    arrival_time: Optional[datetime] = None
+    status: Optional[str] = None
+    
 # Spaceships
 class SpaceshipCreate(BaseModel):
     model: str
@@ -205,6 +214,12 @@ class MaintenanceTaskResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class MaintenanceTaskUpdateRequest(BaseModel): # 유지 보수 일정 수정용 테이블
+    task_type: Optional[str] = None
+    priority: Optional[int] = None
+    deadline: Optional[date] = None
+    status: Optional[str] = None
+
 # MaintenanceRecords
 class MaintenanceRecordCreate(BaseModel):
     task_id: int
@@ -235,13 +250,15 @@ class CustomerResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class CustomerUpdateRequest(BaseModel): # 고객 개인정보 수정용 테이블
+    name: Optional[str] = None
+    contact_info: Optional[str] = None
+
 # Reservations
 class ReservationCreate(BaseModel):
     customer_id: int
     flight_id: int
     seat_number: str
-    status: str
-    reservation_date: datetime
 
 class ReservationResponse(BaseModel):
     reservation_id: int

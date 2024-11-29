@@ -3,7 +3,7 @@ from fastapi import HTTPException, UploadFile
 from models import Licenses, LicenseCreateRequest
 import io
 
-# ADD new License
+# Pilot - 파일럿의 새로운 라이선스 추가
 def add_license(db: Session, pilot_id: int, license_data: LicenseCreateRequest, license_file: UploadFile):
     # PDF 파일 처리
     if license_file.content_type != "application/pdf":

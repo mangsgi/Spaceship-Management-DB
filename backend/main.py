@@ -1,16 +1,17 @@
-from fastapi import FastAPI, Depends, UploadFile, File
+from fastapi import FastAPI, Depends, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine, Base
+from typing import Optional, List
 from operations import administrators, customers, flights, maintenance_records, maintenance_tasks, mechanics, pilot_flights, pilots, reservations, spaceships, user_roles, licenses
 from models import (
     PilotCreate, PilotResponse, PilotUpdateRequest,
     FlightCreate, FlightResponse,
     SpaceshipCreate, SpaceshipResponse,
     PilotFlightCreate, PilotFlightResponse,
-    MaintenanceTaskCreate, MaintenanceTaskResponse,
-    MaintenanceRecordCreate, MaintenanceRecordResponse,
-    CustomerCreate, CustomerResponse,
+    MaintenanceTaskCreate, MaintenanceTaskResponse, MaintenanceTaskUpdateRequest,
+    MaintenanceRecordCreate, MaintenanceRecordResponse, 
+    CustomerCreate, CustomerResponse, CustomerUpdateRequest,
     ReservationCreate, ReservationResponse,
     MechanicCreate, MechanicResponse,
     AdministratorCreate, AdministratorResponse, 
@@ -56,45 +57,37 @@ def read_root():
 # Pilots Endpoints
 # ---------------------------------------------------
 
-@app.post("/pilots/", response_model=PilotResponse)
-def create_pilot_endpoint(pilot: PilotCreate, db: Session = Depends(get_db)):
-    return pilots.create_pilot(db, pilot)
-
-@app.get("/pilots/", response_model=list[PilotResponse])
-def read_all_pilots_endpoint(db: Session = Depends(get_db)):
-    return pilots.get_all_pilots(db)
-
-@app.put("/pilots/{pilot_id}", response_model=PilotResponse)
-def update_pilot_endpoint(pilot_id: int, pilot: PilotCreate, db: Session = Depends(get_db)):
-    return pilots.update_pilot(db, pilot_id, pilot)
-
-@app.delete("/pilots/{pilot_id}")
-def delete_pilot_endpoint(pilot_id: int, db: Session = Depends(get_db)):
-    return pilots.delete_pilot(db, pilot_id)
-
-# 본인의 개인정보 수정
+# Pilot - 본인의 개인정보 수정
 @app.patch("/pilots/{pilot_id}")
 def update_pilot_information_endpoint(pilot_id: int, pilot_data: PilotUpdateRequest, db: Session = Depends(get_db)):
     return pilots.update_pilot_information(db, pilot_id, pilot_data)
-
-# 면허정보 갱신
 
 # ---------------------------------------------------
 # Flights Endpoints
 # ---------------------------------------------------
 
-@app.post("/flights/", response_model=FlightResponse)
-def create_flight_endpoint(flight: FlightCreate, db: Session = Depends(get_db)):
-    return flights.create_flight(db, flight)
+# Customer - 비행 일정 조회
+@app.get("/flights/search/", response_model=List[FlightResponse])
+def get_flights(
+    departure_location: Optional[str] = None,
+    arrival_location: Optional[str] = None,
+    departure_date: Optional[str] = None,
+    sort_by: Optional[str] = "departure_time",
+    db: Session = Depends(get_db)
+):
+    return flights.search_flights(db, departure_location, arrival_location, departure_date, sort_by)
 
-@app.get("/flights/", response_model=list[FlightResponse])
-def read_all_flights_endpoint(db: Session = Depends(get_db)):
-    return flights.get_all_flights(db)
+# Administrator - 비행 일정 생성
+@app.post("/flights", response_model=FlightResponse)
+def create_flight_endpoint(flight_data: FlightCreate, db: Session = Depends(get_db)):
+    return flights.create_flight(db, flight_data)
 
+# Administrator - 비행 일정 수정
 @app.put("/flights/{flight_id}", response_model=FlightResponse)
-def update_flight_endpoint(flight_id: int, flight: FlightCreate, db: Session = Depends(get_db)):
-    return flights.update_flight(db, flight_id, flight)
+def update_flight_endpoint(flight_id: int, flight_data: FlightCreate, db: Session = Depends(get_db)):
+    return flights.update_flight(db, flight_id, flight_data)
 
+# Administrator - 비행 일정 삭제
 @app.delete("/flights/{flight_id}")
 def delete_flight_endpoint(flight_id: int, db: Session = Depends(get_db)):
     return flights.delete_flight(db, flight_id)
@@ -103,207 +96,158 @@ def delete_flight_endpoint(flight_id: int, db: Session = Depends(get_db)):
 # Spaceships Endpoints
 # ---------------------------------------------------
 
-@app.post("/spaceships/", response_model=SpaceshipResponse)
-def create_spaceship_endpoint(spaceship: SpaceshipCreate, db: Session = Depends(get_db)):
-    return spaceships.create_spaceship(db, spaceship)
-
-@app.get("/spaceships/", response_model=list[SpaceshipResponse])
-def read_all_spaceships_endpoint(db: Session = Depends(get_db)):
-    return spaceships.get_all_spaceships(db)
-
-@app.put("/spaceships/{spaceship_id}", response_model=SpaceshipResponse)
-def update_spaceship_endpoint(spaceship_id: int, spaceship: SpaceshipCreate, db: Session = Depends(get_db)):
-    return spaceships.update_spaceship(db, spaceship_id, spaceship)
-
-@app.delete("/spaceships/{spaceship_id}")
-def delete_spaceship_endpoint(spaceship_id: int, db: Session = Depends(get_db)):
-    return spaceships.delete_spaceship(db, spaceship_id)
+# Administrator - 우주선 상태 업데이트
+@app.patch("/spaceships/{spaceship_id}/status", response_model=MaintenanceTaskResponse)
+def update_spaceship_status_endpoint(
+    spaceship_id: int,
+    update_status = str,
+    db: Session = Depends(get_db)
+):
+    return spaceships.update_spaceship_status(db, spaceship_id, update_status)
 
 # ---------------------------------------------------
 # PilotFlights Endpoints
 # ---------------------------------------------------
 
-@app.post("/pilot_flights/", response_model=PilotFlightResponse)
-def create_pilot_flight_endpoint(pilot_flight: PilotFlightCreate, db: Session = Depends(get_db)):
-    return pilot_flights.create_pilot_flight(db, pilot_flight)
-
-# @app.get("/pilot_flights/{pilot__id}", response_model=list[PilotFlightResponse])
-# def read_all_pilot_flights_endpoint(db: Session = Depends(get_db)):
-#     return pilot_flights.get_all_pilot_flights(db)
-
-@app.put("/pilot_flights/{pilot_flight_id}", response_model=PilotFlightResponse)
-def update_pilot_flight_endpoint(pilot_flight_id: int, pilot_flight: PilotFlightCreate, db: Session = Depends(get_db)):
-    return pilot_flights.update_pilot_flight(db, pilot_flight_id, pilot_flight)
-
-@app.delete("/pilot_flights/{pilot_flight_id}")
-def delete_pilot_flight_endpoint(pilot_flight_id: int, db: Session = Depends(get_db)):
-    return pilot_flights.delete_pilot_flight(db, pilot_flight_id)
-
-# Pilots - 자신에게 할당된 비행 일정 조회, TODO 현재 진행중인 것만 볼 수 있도록 선택하는 방향으로 하려면.. 추가해야 함
+# Pilot - 자신에게 할당된 비행 일정 조회, TODO 현재 진행중인 것만 볼 수 있도록 선택하는 방향으로 하려면.. 추가해야 함
 @app.get("/pilot_flights/{pilot__id}", response_model=list[PilotFlightResponse])
 def read_pilot_flights_endpoint(pilot_id: int, db: Session = Depends(get_db)):
     return pilot_flights.read_pilot_flights(db, pilot_id)
+
+# Administrator - 조종사 할당, TODO input이 이게 최선인가?
+@app.post("/pilot_assignment/", response_model=PilotFlightResponse)
+def assign_pilot_to_flight_endpoint(pilot_flight_data: PilotFlightCreate, db: Session = Depends(get_db)):
+    return pilot_flights.assign_pilot_to_flight(db, pilot_flight_data)
 
 # ---------------------------------------------------
 # MaintenanceTasks Endpoints
 # ---------------------------------------------------
 
-@app.post("/maintenance_tasks/", response_model=MaintenanceTaskResponse)
-def create_maintenance_task_endpoint(task: MaintenanceTaskCreate, db: Session = Depends(get_db)):
-    return maintenance_tasks.create_maintenance_task(db, task)
-
+# Mechanic - 유지 보수 작업 할당 조회, TODO 맡은 tasks만 볼 수 있도록 하려면 엄청 만들어야 함..
 @app.get("/maintenance_tasks/", response_model=list[MaintenanceTaskResponse])
-def read_all_maintenance_tasks_endpoint(db: Session = Depends(get_db)):
-    return maintenance_tasks.get_all_maintenance_tasks(db)
+def read_maintenance_tasks(task_type: Optional[str] = None, priority: Optional[int] = None, deadline: Optional[str] = None, db: Session = Depends(get_db)):
+    return maintenance_tasks.get_maintenance_tasks(db, task_type, priority, deadline)
 
-@app.put("/maintenance_tasks/{task_id}", response_model=MaintenanceTaskResponse)
-def update_maintenance_task_endpoint(task_id: int, task: MaintenanceTaskCreate, db: Session = Depends(get_db)):
-    return maintenance_tasks.update_maintenance_task(db, task_id, task)
+# Administrator - 유지 보수 일정 생성
+@app.post("/maintenance_tasks/", response_model=MaintenanceTaskResponse)
+def create_maintenance_task_endpoint(
+    task_data: MaintenanceTaskCreate,
+    db: Session = Depends(get_db)
+):
+    return maintenance_tasks.create_maintenance_task(db, task_data)
 
-@app.delete("/maintenance_tasks/{task_id}")
-def delete_maintenance_task_endpoint(task_id: int, db: Session = Depends(get_db)):
-    return maintenance_tasks.delete_maintenance_task(db, task_id)
+# Administrator - 유지 보수 일정 조회
+@app.get("/maintenance_tasks_all/", response_model=list[MaintenanceTaskResponse])
+def get_maintenance_tasks_endpoint(
+    spaceship_id: Optional[int] = None,
+    db: Session = Depends(get_db)
+):
+    return maintenance_tasks.get_maintenance_tasks(db, spaceship_id)
 
-# 유지 보수 작업 할당 조회, 작업 유형, 우선순위, 마감일별로 필터링하며 마감일 기준으로 정렬
-# @app.get("/maintenance_tasks/", response_model=List[MaintenanceTaskResponse])
-# def read_maintenance_tasks(
-#     task_type: Optional[str] = Query(None, description="작업 유형 (정기 점검, 수리 등)"),
-#     priority: Optional[int] = Query(None, description="작업 우선순위"),
-#     deadline: Optional[str] = Query(None, description="작업 마감일 (YYYY-MM-DD 형식)"),
-#     db: Session = Depends(get_db)
-# ):
-#     return get_maintenance_tasks(db, task_type, priority, deadline)
+# Administrator - 유지 보수 일정 수정
+@app.patch("/maintenance_tasks/{task_id}", response_model=MaintenanceTaskResponse)
+def update_maintenance_task_endpoint(
+    task_id: int,
+    task_data: MaintenanceTaskUpdateRequest,
+    db: Session = Depends(get_db),
+):
+    return maintenance_tasks.update_maintenance_task(db, task_id, task_data)
+
 
 # ---------------------------------------------------
 # MaintenanceRecords Endpoints
 # ---------------------------------------------------
 
+# Mechanic - 유지 보수 작업 기록하기
 @app.post("/maintenance_records/", response_model=MaintenanceRecordResponse)
 def create_maintenance_record_endpoint(record: MaintenanceRecordCreate, db: Session = Depends(get_db)):
     return maintenance_records.create_maintenance_record(db, record)
-
-@app.get("/maintenance_records/", response_model=list[MaintenanceRecordResponse])
-def read_all_maintenance_records_endpoint(db: Session = Depends(get_db)):
-    return maintenance_records.get_all_maintenance_records(db)
-
-@app.put("/maintenance_records/{record_id}", response_model=MaintenanceRecordResponse)
-def update_maintenance_record_endpoint(record_id: int, record: MaintenanceRecordCreate, db: Session = Depends(get_db)):
-    return maintenance_records.update_maintenance_record(db, record_id, record)
-
-@app.delete("/maintenance_records/{record_id}")
-def delete_maintenance_record_endpoint(record_id: int, db: Session = Depends(get_db)):
-    return maintenance_records.delete_maintenance_record(db, record_id)
 
 # ---------------------------------------------------
 # Customers Endpoints
 # ---------------------------------------------------
 
-@app.post("/customers/", response_model=CustomerResponse)
-def create_customer_endpoint(customer: CustomerCreate, db: Session = Depends(get_db)):
-    return customers.create_customer(db, customer)
-
-@app.get("/customers/", response_model=list[CustomerResponse])
-def read_all_customers_endpoint(db: Session = Depends(get_db)):
-    return customers.get_all_customers(db)
-
-@app.put("/customers/{customer_id}", response_model=CustomerResponse)
-def update_customer_endpoint(customer_id: int, customer: CustomerCreate, db: Session = Depends(get_db)):
-    return customers.update_customer(db, customer_id, customer)
-
-@app.delete("/customers/{customer_id}")
-def delete_customer_endpoint(customer_id: int, db: Session = Depends(get_db)):
-    return customers.delete_customer(db, customer_id)
+# Customers - 본인의 개인정보 수정
+@app.patch("/customers/{customer_id}", response_model=CustomerResponse)
+def update_customer_information_endpoint(
+    customer_id: int,
+    customer_data: CustomerUpdateRequest,
+    db: Session = Depends(get_db)
+):
+    updated_customer = customers.update_customer_information(db, customer_id, customer_data)
+    return updated_customer
 
 # ---------------------------------------------------
 # Reservations Endpoints
 # ---------------------------------------------------
 
+# Customer - 좌석 예약
 @app.post("/reservations/", response_model=ReservationResponse)
-def create_reservation_endpoint(reservation: ReservationCreate, db: Session = Depends(get_db)):
-    return reservations.create_reservation(db, reservation)
+def reserve_flight_seat(
+    reservation_data: ReservationCreate,
+    db: Session = Depends(get_db)
+):
+    try:
+        reservation = reservations.reserve_seat(
+            db,
+            customer_id=reservation_data.customer_id,
+            flight_id=reservation_data.flight_id,
+            seat_number=reservation_data.seat_number
+        )
+        return reservation
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
-@app.get("/reservations/", response_model=list[ReservationResponse])
-def read_all_reservations_endpoint(db: Session = Depends(get_db)):
-    return reservations.get_all_reservations(db)
+# Customer - 예약 조회
+@app.get("/reservations/my", response_model=List[ReservationResponse])
+def get_reservations(
+    customer_id: int,
+    status: Optional[str] = None,
+    reservation_date: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    my_reservations = reservations.get_customer_reservations(db, customer_id, status, reservation_date)
+    if not my_reservations:
+        return {"message": "예약 내역이 없습니다."}
+    return my_reservations
 
-@app.put("/reservations/{reservation_id}", response_model=ReservationResponse)
-def update_reservation_endpoint(reservation_id: int, reservation: ReservationCreate, db: Session = Depends(get_db)):
-    return reservations.update_reservation(db, reservation_id, reservation)
-
-@app.delete("/reservations/{reservation_id}")
-def delete_reservation_endpoint(reservation_id: int, db: Session = Depends(get_db)):
-    return reservations.delete_reservation(db, reservation_id)
+# Customer - 예약 취소
+@app.patch("/reservations/my/cancel/{reservation_id}")
+def cancel_reservation(
+    customer_id: int,
+    reservation_id: int,
+    db: Session = Depends(get_db)
+):
+    return reservations.cancel_customer_reservation(db, customer_id, reservation_id)
 
 # ---------------------------------------------------
 # Mechanics Endpoints
 # ---------------------------------------------------
 
-@app.post("/mechanics/", response_model=MechanicResponse)
-def create_mechanic_endpoint(mechanic: MechanicCreate, db: Session = Depends(get_db)):
-    return mechanics.create_mechanic(db, mechanic)
 
-@app.get("/mechanics/", response_model=list[MechanicResponse])
-def read_all_mechanics_endpoint(db: Session = Depends(get_db)):
-    return mechanics.get_all_mechanics(db)
-
-@app.put("/mechanics/{mechanic_id}", response_model=MechanicResponse)
-def update_mechanic_endpoint(mechanic_id: int, mechanic: MechanicCreate, db: Session = Depends(get_db)):
-    return mechanics.update_mechanic(db, mechanic_id, mechanic)
-
-@app.delete("/mechanics/{mechanic_id}")
-def delete_mechanic_endpoint(mechanic_id: int, db: Session = Depends(get_db)):
-    return mechanics.delete_mechanic(db, mechanic_id)
 
 # ---------------------------------------------------
 # Administrators Endpoints
 # ---------------------------------------------------
 
-@app.post("/administrators/", response_model=AdministratorResponse)
-def create_administrator_endpoint(administrator: AdministratorCreate, db: Session = Depends(get_db)):
-    return administrators.create_administrator(db, administrator)
 
-@app.get("/administrators/", response_model=list[AdministratorResponse])
-def read_all_administrators_endpoint(db: Session = Depends(get_db)):
-    return administrators.get_all_administrators(db)
-
-@app.put("/administrators/{admin_id}", response_model=AdministratorResponse)
-def update_administrator_endpoint(admin_id: int, administrator: AdministratorCreate, db: Session = Depends(get_db)):
-    return administrators.update_administrator(db, admin_id, administrator)
-
-@app.delete("/administrators/{admin_id}")
-def delete_administrator_endpoint(admin_id: int, db: Session = Depends(get_db)):
-    return administrators.delete_administrator(db, admin_id)
 
 # ---------------------------------------------------
 # UserRoles Endpoints
 # ---------------------------------------------------
 
-@app.post("/user_roles/", response_model=UserRoleResponse)
-def create_user_role_endpoint(user_role: UserRoleCreate, db: Session = Depends(get_db)):
-    return user_roles.create_user_role(db, user_role)
 
-@app.get("/user_roles/", response_model=list[UserRoleResponse])
-def read_all_user_roles_endpoint(db: Session = Depends(get_db)):
-    return user_roles.get_all_user_roles(db)
-
-@app.put("/user_roles/{user_role_id}", response_model=UserRoleResponse)
-def update_user_role_endpoint(user_role_id: int, user_role: UserRoleCreate, db: Session = Depends(get_db)):
-    return user_roles.update_user_role(db, user_role_id, user_role)
-
-@app.delete("/user_roles/{user_role_id}")
-def delete_user_role_endpoint(user_role_id: int, db: Session = Depends(get_db)):
-    return user_roles.delete_user_role(db, user_role_id)
 
 # ---------------------------------------------------
 # Licenses Endpoints
 # ---------------------------------------------------
 
-# 파일럿의 새로운 라이선스 추가 (PDF 포함)
+# Pilot - 파일럿의 새로운 라이선스 추가 (PDF 포함) TODO Pilot이 등록될 때 면허가 있어야 되지 않을까?
 @app.post("/pilots/{pilot_id}/licenses", response_model=LicenseResponse)
 def add_license_endpoint(pilot_id: int, license_data: LicenseCreateRequest = Depends(), license_file: UploadFile = File(...), db: Session = Depends(get_db)):
     return licenses.add_license(db, pilot_id, license_data, license_file)
 
 # 라이선스 상태 변경 (허가, 갱신 중, 만료)
-@app.patch("/licenses/{license_id}/status", response_model=LicenseResponse) # 관리자가 진행
+@app.patch("/licenses/{license_id}/status", response_model=LicenseResponse)
 def update_license_status_endpoint(license_id: int, new_status: str, db: Session = Depends(get_db)):
     return licenses.update_license_status(db, license_id, new_status)
