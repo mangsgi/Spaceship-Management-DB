@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, UploadFile
-from models import Licenses, LicenseCreateRequest
+from models import Licenses, LicenseCreateRequest, LicenseResponse
 import io
 
 # Pilot - 파일럿의 새로운 라이선스 추가
@@ -22,7 +22,7 @@ def add_license(db: Session, pilot_id: int, license_data: LicenseCreateRequest, 
     db.add(new_license)
     db.commit()
     db.refresh(new_license)
-    return new_license
+    return LicenseResponse.model_validate(new_license)
 
 # UPDATE License Status
 def update_license_status(db: Session, license_id: int, new_status: str):

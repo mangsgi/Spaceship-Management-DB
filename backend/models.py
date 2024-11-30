@@ -116,7 +116,6 @@ class Licenses(Base):  # 라이선스 테이블
 '''
 Pydantic 모델 정의
 API 요청 시 데이터를 검증하고 구조화
-Create와 Response로 나눔
 '''
 
 # Pilots

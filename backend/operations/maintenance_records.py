@@ -8,4 +8,4 @@ def create_maintenance_record(db: Session, record: MaintenanceRecordCreate) -> M
     db.add(db_record)
     db.commit()
     db.refresh(db_record)
-    return db_record
+    return MaintenanceRecordResponse.model_validate(db_record)

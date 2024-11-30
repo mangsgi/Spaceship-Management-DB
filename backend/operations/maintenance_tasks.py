@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from models import MaintenanceTasks, MaintenanceTaskCreate, MaintenanceTaskResponse, Spaceships, MaintenanceTaskUpdateRequest
 from fastapi import HTTPException
-from typing import Optional, List
+from typing import Optional
 
 # Administrator - 유지 보수 일정 생성
 def create_maintenance_task(db: Session, task_data: MaintenanceTaskCreate) -> MaintenanceTaskResponse:
@@ -20,12 +20,11 @@ def get_maintenance_tasks(db: Session, spaceship_id: Optional[int] = None) -> li
     query = db.query(MaintenanceTasks)
     if spaceship_id:
         query = query.filter(MaintenanceTasks.spaceship_id == spaceship_id)
-    return query.order_by(MaintenanceTasks.deadline).all()
+    schedules = query.order_by(MaintenanceTasks.deadline).all()
+    return [MaintenanceTaskResponse.model_validate(schedule) for schedule in schedules]
 
 # Administrator - 유지 보수 일정 수정
-def update_maintenance_task(
-    db: Session, task_id: int, task_data: MaintenanceTaskUpdateRequest
-) -> MaintenanceTaskResponse:
+def update_maintenance_task(db: Session, task_id: int, task_data: MaintenanceTaskUpdateRequest) -> MaintenanceTaskResponse:
     task = db.query(MaintenanceTasks).filter(MaintenanceTasks.task_id == task_id).first()
     if not task:
         raise HTTPException(status_code=400, detail="유지 보수 작업을 찾을 수 없습니다.")
@@ -44,7 +43,13 @@ def update_maintenance_task(
     return MaintenanceTaskResponse.model_validate(task)
 
 # Mechanic - 유지 보수 작업 할당 조회
-def get_maintenance_tasks(db: Session, task_type: Optional[str] = None, priority: Optional[int] = None, deadline: Optional[str] = None) -> List[MaintenanceTaskResponse]:
+def get_maintenance_tasks(
+    db: Session, 
+    task_type: Optional[str] = None, 
+    priority: Optional[int] = None, 
+    deadline: Optional[str] = None
+    ) -> list[MaintenanceTaskResponse]:
+    
     query = db.query(MaintenanceTasks)
 
     if task_type:

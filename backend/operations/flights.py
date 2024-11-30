@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from models import Flights, FlightCreate, FlightResponse, FlightUpdateRequest
 from fastapi import HTTPException
-from typing import Optional, List
+from typing import Optional
 from sqlalchemy import Date
 
 # Administrator - 비행 일정 생성
@@ -11,22 +11,18 @@ def create_flight(db: Session, flight: FlightCreate) -> FlightResponse:
         db.add(db_flight)
         db.commit()
         db.refresh(db_flight)
-        return db_flight
+        return FlightResponse.model_validate(db_flight)
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=f"비행 일정 생성 중 오류 발생: {str(e)}")
 
 # Administrator - 비행 일정 수정 
-def update_flight_information(
-    db: Session, flight_id: int, flight_data: FlightUpdateRequest
-) -> FlightResponse:
-    
+def update_flight_information(db: Session, flight_id: int, flight_data: FlightUpdateRequest) -> FlightResponse:
     flight = db.query(Flights).filter(Flights.flight_id == flight_id).first()
     
     if not flight:
         raise HTTPException(status_code=404, detail="비행 일정을 찾을 수 없습니다.")
     try:
-        # Update only the fields provided in the request
         if flight_data.departure_location is not None:
             flight.departure_location = flight_data.departure_location
         if flight_data.arrival_location is not None:
@@ -65,7 +61,7 @@ def search_flights(
     arrival_location: Optional[str] = None,
     departure_date: Optional[str] = None,
     sort_by: Optional[str] = "departure_time"
-) -> List[FlightResponse]:
+) -> list[FlightResponse]:
     
     query = db.query(Flights)
 

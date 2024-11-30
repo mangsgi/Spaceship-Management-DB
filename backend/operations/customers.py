@@ -3,12 +3,7 @@ from models import Customers, CustomerCreate, CustomerResponse, CustomerUpdateRe
 from fastapi import HTTPException
 
 # Customers - 본인의 개인정보 수정
-def update_customer_information(
-    db: Session,
-    customer_id: int,
-    customer_data: CustomerUpdateRequest
-) -> CustomerResponse:
-    
+def update_customer_information(db: Session, customer_id: int, customer_data: CustomerUpdateRequest) -> CustomerResponse:
     # 해당 고객 검색
     customer = db.query(Customers).filter(Customers.customer_id == customer_id).first()
     if not customer:

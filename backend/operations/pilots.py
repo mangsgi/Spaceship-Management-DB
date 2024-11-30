@@ -17,4 +17,4 @@ def update_pilot_information(db: Session, pilot_id: int, pilot_data: PilotUpdate
 
     db.commit()
     db.refresh(pilot)
-    return pilot
+    return PilotResponse.model_validate(pilot)

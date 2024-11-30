@@ -13,14 +13,11 @@ def read_pilot_flights(db: Session, pilot_id: int) -> list[PilotFlightResponse]:
         .all()
     )
     if not schedules:
-        return {"message": "현재 할당된 스케줄이 없습니다."}
-    return {"schedules": schedules}
+        return []
+    return [PilotFlightResponse.model_validate(schedule) for schedule in schedules]
 
 # Administrator - 조종사 할당
-def assign_pilot_to_flight(
-    db: Session, pilot_flight_data: PilotFlightCreate
-) -> PilotFlightResponse:
-    
+def assign_pilot_to_flight(db: Session, pilot_flight_data: PilotFlightCreate) -> PilotFlightResponse:
     # 해당 비행 일정이 존재하는지 확인
     flight = db.query(Flights).filter(Flights.flight_id == pilot_flight_data.flight_id).first()
     if not flight:
