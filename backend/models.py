@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 from database import Base
 from pydantic import BaseModel
 from datetime import date, datetime
-from typing import Optional
+from typing import Optional, List
 
 '''
 데이터베이스 테이블 정의
@@ -190,6 +190,13 @@ class PilotFlightResponse(BaseModel):
     pilot_flight_id: int
     flight_id: int
     pilot_id: int
+
+    class Config:
+        from_attributes = True
+
+class PilotFlightScheduleResponse(BaseModel): # 일단 보류
+    pilot: PilotCreate
+    flights: List[dict]  # Contains details of flights the pilot is assigned to
 
     class Config:
         from_attributes = True

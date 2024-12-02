@@ -1,17 +1,20 @@
 from sqlalchemy.orm import Session
 from models import PilotFlights, PilotFlightCreate, PilotFlightResponse, Pilots, Flights
 from fastapi import HTTPException
+from datetime import datetime
 
 # Pilot - 자신에게 할당된 비행 일정 조회
-def read_pilot_flights(db: Session, pilot_id: int) -> list[PilotFlightResponse]:
+def read_pilot_flights(db: Session, pilot_id: int, is_current: bool) -> list[PilotFlightResponse]:
     pilot_exists = db.query(Pilots).filter(Pilots.pilot_id == pilot_id).first()
     if not pilot_exists:
-        raise HTTPException(status_code=404, detail="해당 조종사가 존재하지 않습니다.")
+        raise HTTPException(status_code=400, detail="해당 조종사가 존재하지 않습니다.")
     schedules = (
         db.query(PilotFlights)
         .filter(PilotFlights.pilot_id == pilot_id)
         .all()
     )
+    if is_current: # 현재 기준 비행 일정 조회
+        schedules = schedules.query() 
     if not schedules:
         return []
     return [PilotFlightResponse.model_validate(schedule) for schedule in schedules]

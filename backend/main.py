@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine, Base
 from typing import Optional, List
+from datetime import datetime
 from operations import administrators, customers, flights, maintenance_records, maintenance_tasks, mechanics, pilot_flights, pilots, reservations, spaceships, user_roles, licenses
 from models import (
     PilotCreate, PilotResponse, PilotUpdateRequest,
@@ -57,7 +58,16 @@ def read_root():
 # Pilots Endpoints
 # ---------------------------------------------------
 
-# TODO Pliot 생성 조회 삭제
+# TODO Pliot 생성 삭제
+
+# FIN Administrator - 파일럿 조회 in order to 비행 일정 생성과 수정 및 파일럿 할당
+@app.get("/pilots/available", response_model=List[PilotResponse])
+def retrieve_available_pilots(
+    departure_time: Optional[datetime] = None,
+    departure_location: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    return pilots.get_available_pilots(db, departure_time, departure_location)
 
 # Pilot - 본인의 개인정보 수정
 @app.patch("/pilots/{pilot_id}")
@@ -79,12 +89,12 @@ def get_flights(
 ):
     return flights.search_flights(db, departure_location, arrival_location, departure_date, sort_by)
 
-# Administrator - 비행 일정 생성 TODO 이미 그 우주선이 사용 중이라면?
+# Administrator - 비행 일정 생성
 @app.post("/flights", response_model=FlightResponse)
 def create_flight_endpoint(flight_data: FlightCreate, db: Session = Depends(get_db)):
     return flights.create_flight(db, flight_data)
 
-# Administrator - 비행 일정 수정 TODO 이미 그 우주선이 사용 중이라면?
+# Administrator - 비행 일정 수정
 @app.patch("/flights/{flight_id}", response_model=FlightResponse)
 def update_flight_endpoint(flight_id: int, flight_data: FlightUpdateRequest, db: Session = Depends(get_db)):
     return flights.update_flight_information(db, flight_id, flight_data)
@@ -98,6 +108,15 @@ def delete_flight_endpoint(flight_id: int, db: Session = Depends(get_db)):
 # Spaceships Endpoints
 # ---------------------------------------------------
 
+# Fin Administrator - 우주선 조회 in order to 비행 일정 생성과 수정 및 우주선 할당
+@app.get("/spaceships/available", response_model=List[SpaceshipResponse])
+def retrieve_available_spaceships(
+    departure_time: Optional[datetime] = None, 
+    arrival_time: Optional[datetime] = None, 
+    db: Session = Depends(get_db)
+):
+    return spaceships.get_available_spaceships(db, departure_time, arrival_time)
+
 # Administrator - 우주선 상태 업데이트
 @app.patch("/spaceships/{spaceship_id}/status", response_model=MaintenanceTaskResponse) # "운영 중", "점검 중"
 def update_spaceship_status_endpoint(spaceship_id: int, update_status = str, db: Session = Depends(get_db)):
@@ -108,8 +127,8 @@ def update_spaceship_status_endpoint(spaceship_id: int, update_status = str, db:
 # ---------------------------------------------------
 
 # Pilot - 자신에게 할당된 비행 일정 조회, TODO 현재 진행중인 것만 볼 수 있도록 선택하는 방향으로 하려면.. 추가해야 함.
-@app.get("/pilot_flights/{pilot__id}", response_model=list[PilotFlightResponse])
-def read_pilot_flights_endpoint(pilot_id: int, db: Session = Depends(get_db)):
+@app.get("/pilot_flights/{pilot__id}/{is_current}", response_model=list[PilotFlightResponse])
+def read_pilot_flights_endpoint(pilot_id: int, is_current: bool, db: Session = Depends(get_db)):
     return pilot_flights.read_pilot_flights(db, pilot_id)
 
 # Administrator - 조종사 할당, TODO Pliots(면허 있는) 쭈루룩 조회랑 Flights 쭈루룩(조종사 할당 안된) 조회 기능 필요
