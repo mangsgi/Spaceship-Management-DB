@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session, joinedload
-from models import Pilots, PilotCreate, PilotResponse, PilotUpdateRequest, Flights, PilotFlights, FlightResponse
+from models import Pilots, PilotCreate, PilotResponse, PilotUpdateRequest, Flights, PilotFlights, Licenses
 from fastapi import HTTPException
 from datetime import datetime
 from typing import Optional, List
@@ -21,13 +21,22 @@ def update_pilot_information(db: Session, pilot_id: int, pilot_data: PilotUpdate
     db.refresh(pilot)
     return PilotResponse.model_validate(pilot)
 
-# Administrator - 모든 파일럿 조회 in order to 비행 일정 생성 및 파일럿 할당
+# Administrator - 라이선스가 있는 모든 파일럿 조회 -> 비행 일정 생성 및 파일럿 할당
 def get_available_pilots(
     db: Session, 
     departure_time: Optional[datetime] = None, 
     departure_location: Optional[str] = None
 ) -> List[Pilots]:
-    pilots = db.query(Pilots).all()
+    # 라이선스가 있는 파일럿 조회
+    pilots = (
+        db.query(Pilots)
+        .join(Licenses, Pilots.pilot_id == Licenses.pilot_id)
+        .filter(
+            Licenses.license_status == "허가",
+            Licenses.license_expiry_date >= datetime.now()
+        )
+        .all()
+    )
 
     available_pilots = []
     for pilot in pilots:

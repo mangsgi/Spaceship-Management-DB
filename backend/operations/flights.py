@@ -1,8 +1,9 @@
 from sqlalchemy.orm import Session
-from models import Flights, FlightCreate, FlightResponse, FlightUpdateRequest
+from models import Flights, FlightCreate, FlightResponse, FlightUpdateRequest, Pilots, PilotFlights
 from fastapi import HTTPException
-from typing import Optional
-from sqlalchemy import Date
+from typing import Optional, List
+from sqlalchemy import Date, not_
+from datetime import datetime
 
 # Administrator - 비행 일정 생성
 def create_flight(db: Session, flight: FlightCreate) -> FlightResponse:
@@ -54,6 +55,31 @@ def delete_flight(db: Session, flight_id: int):
         db.rollback()
         raise HTTPException(status_code=400, detail=f"비행 일정 삭제 중 오류 발생: {str(e)}")
 
+# Pilot - 자신에게 할당된 비행 일정 조회
+def read_pilot_flights(db: Session, pilot_id: int, is_current: Optional[bool] = False) -> List[FlightResponse]:
+    # Pilot 존재 확인
+    pilot_exists = db.query(Pilots).filter(Pilots.pilot_id == pilot_id).first()
+    if not pilot_exists:
+        raise HTTPException(status_code=400, detail="해당 조종사가 존재하지 않습니다.")
+
+    # 비행 일정 불러오기
+    query = (
+        db.query(Flights)
+        .join(PilotFlights, Flights.flight_id == PilotFlights.flight_id)
+        .filter(PilotFlights.pilot_id == pilot_id)
+    )
+
+    # 현재 이후 일정만 확인
+    if is_current:
+        current_time = datetime.now()
+        query = query.filter(Flights.departure_time <= current_time, Flights.arrival_time >= current_time)
+
+    flights = query.all()
+
+    if not flights:
+        return []
+    return [FlightResponse.model_validate(flight) for flight in flights]
+
 # Customer - 비행 일정 조회
 def search_flights(
     db: Session,
@@ -81,3 +107,21 @@ def search_flights(
 
     flights = query.all()
     return [FlightResponse.model_validate(flight) for flight in flights]
+
+# Fin Administrator - 조종사가 할당되지 않은 비행 일정 조회 to 조종사 할당
+def get_unassigned_flights(db: Session) -> List[FlightResponse]:
+    unassigned_flights = (
+        db.query(Flights)
+        .filter(
+            not_(
+                db.query(PilotFlights.flight_id)
+                .filter(PilotFlights.flight_id == Flights.flight_id)
+                .exists()
+            )
+        )
+        .all()
+    )
+
+    if not unassigned_flights:
+        return []
+    return [FlightResponse.model_validate(flight) for flight in unassigned_flights]

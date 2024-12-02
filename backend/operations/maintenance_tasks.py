@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
-from models import MaintenanceTasks, MaintenanceTaskCreate, MaintenanceTaskResponse, Spaceships, MaintenanceTaskUpdateRequest
+from models import MaintenanceTasks, MaintenanceTaskCreate, MaintenanceTaskResponse, Spaceships, MaintenanceTaskUpdateRequest, Mechanics, MaintenanceTaskAssignments
 from fastapi import HTTPException
-from typing import Optional
+from typing import Optional, List
 
 # Administrator - 유지 보수 일정 생성
 def create_maintenance_task(db: Session, task_data: MaintenanceTaskCreate) -> MaintenanceTaskResponse:
@@ -38,25 +38,36 @@ def update_maintenance_task(db: Session, task_id: int, task_data: MaintenanceTas
     if task_data.status is not None:
         task.status = task_data.status
 
+    # 정비사 할당 업데이트
+    if task_data.assigned_mechanics is not None:
+        # 기존 할당된 정비사 제거
+        task.assigned_mechanics.clear()
+
+        # 새로운 정비사 할당
+        mechanics = db.query(Mechanics).filter(Mechanics.mechanic_id.in_(task_data.assigned_mechanics)).all()
+        if len(mechanics) != len(task_data.assigned_mechanics):
+            raise HTTPException(status_code=400, detail="할당하려는 정비사 중 일부를 찾을 수 없습니다.")
+        task.assigned_mechanics.extend(mechanics)
+        
     db.commit()
     db.refresh(task)
     return MaintenanceTaskResponse.model_validate(task)
 
-# Mechanic - 유지 보수 작업 할당 조회
-def get_maintenance_tasks(
-    db: Session, 
-    task_type: Optional[str] = None, 
-    priority: Optional[int] = None, 
-    deadline: Optional[str] = None
-    ) -> list[MaintenanceTaskResponse]:
-    
-    query = db.query(MaintenanceTasks)
+# Mechanic - 본인이 할당된 유지 보수 작업 조회
+def get_maintenance_tasks_by_mechanic(db: Session, mechanic_id: int) -> List[MaintenanceTaskResponse]:
+    mechanic_exists = db.query(Mechanics).filter(Mechanics.mechanic_id == mechanic_id).first()
+    if not mechanic_exists:
+        raise HTTPException(status_code=404, detail="해당 정비사가 존재하지 않습니다.")
 
-    if task_type:
-        query = query.filter(MaintenanceTasks.task_type == task_type)
-    if priority:
-        query = query.filter(MaintenanceTasks.priority == priority)
-    if deadline:
-        query = query.filter(MaintenanceTasks.deadline <= deadline)
+    tasks = (
+        db.query(MaintenanceTasks)
+        .join(MaintenanceTaskAssignments, MaintenanceTasks.task_id == MaintenanceTaskAssignments.task_id)
+        .filter(MaintenanceTaskAssignments.mechanic_id == mechanic_id)
+        .order_by(MaintenanceTasks.deadline.asc())
+        .all()
+    )
 
-    return query.order_by(MaintenanceTasks.deadline).all()
+    if not tasks:
+        return []
+    return [MaintenanceTaskResponse.model_validate(task) for task in tasks]
+

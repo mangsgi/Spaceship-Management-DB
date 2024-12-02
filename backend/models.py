@@ -28,7 +28,7 @@ class Flights(Base): # 비행편 테이블
     arrival_time = Column(DateTime, nullable=False)
     status = Column(Enum("예정", "진행 중", "완료", name="flight_status"), nullable=False)
 
-    spaceship = relationship("Spaceships", back_populates="flights") # 두 테이블 간의 관계를 정의, back_populates로 양방향 관계를 설정
+    spaceship = relationship("Spaceships", back_populates="flights") # 두 테이블 간의 관계를 정의, back_populates로 양방향 관계를 설정, Flights에서 Spaceships 참조
 
 class Spaceships(Base): # 우주선 테이블
     __tablename__ = "spaceships"
@@ -40,13 +40,13 @@ class Spaceships(Base): # 우주선 테이블
     flights = relationship("Flights", back_populates="spaceship")
     maintenance_tasks = relationship("MaintenanceTasks", back_populates="spaceship")
 
-class PilotFlights(Base): # 조종사 일정 테이블
+class PilotFlights(Base): # 조종사 비행 일정 테이블
     __tablename__ = "pilot_flights"
     pilot_flight_id = Column(Integer, primary_key=True, index=True)
     flight_id = Column(Integer, ForeignKey("flights.flight_id"), nullable=False)
     pilot_id = Column(Integer, ForeignKey("pilots.pilot_id"), nullable=False)
 
-class MaintenanceTasks(Base): # 우주선 유지보수 테이블
+class MaintenanceTasks(Base):  # 우주선 유지보수 테이블
     __tablename__ = "maintenance_tasks"
     task_id = Column(Integer, primary_key=True, index=True)
     spaceship_id = Column(Integer, ForeignKey("spaceships.spaceship_id"), nullable=False)
@@ -57,6 +57,21 @@ class MaintenanceTasks(Base): # 우주선 유지보수 테이블
 
     spaceship = relationship("Spaceships", back_populates="maintenance_tasks")
     maintenance_records = relationship("MaintenanceRecords", back_populates="maintenance_task")
+    assigned_mechanics = relationship("Mechanics", secondary="maintenance_task_assignments", back_populates="assigned_tasks",)
+
+class MaintenanceTaskAssignments(Base): # 정비사와 유지보수 작업의 다대다 관계를 위한 중간 테이블
+    __tablename__ = "maintenance_task_assignments"
+    assignment_id = Column(Integer, primary_key=True, index=True)
+    task_id = Column(Integer, ForeignKey("maintenance_tasks.task_id"), nullable=False)
+    mechanic_id = Column(Integer, ForeignKey("mechanics.mechanic_id"), nullable=False)
+
+class Mechanics(Base):  # 정비사 테이블
+    __tablename__ = "mechanics"
+    mechanic_id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    contact_info = Column(String, nullable=False)
+
+    assigned_tasks = relationship("MaintenanceTasks", secondary="maintenance_task_assignments", back_populates="assigned_mechanics",)
 
 class MaintenanceRecords(Base): # 유지보수 기록 테이블
     __tablename__ = "maintenance_records"
@@ -216,7 +231,8 @@ class MaintenanceTaskResponse(BaseModel):
     priority: int
     deadline: date
     status: str
-
+    assigned_mechanics: List[int]
+    
     class Config:
         from_attributes = True
 
@@ -225,6 +241,7 @@ class MaintenanceTaskUpdateRequest(BaseModel): # 유지 보수 일정 수정용 
     priority: Optional[int] = None
     deadline: Optional[date] = None
     status: Optional[str] = None
+    assigned_mechanics: Optional[List[int]] = None
 
 # MaintenanceRecords
 class MaintenanceRecordCreate(BaseModel):
