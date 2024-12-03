@@ -17,6 +17,8 @@ class Pilots(Base): # 조종사 테이블
     emergency_contact = Column(String)
 
     licenses = relationship("Licenses", back_populates="pilot")  # 라이선스와 관계 설정
+    user_role = relationship("UserRoles", back_populates="pilot")  # 역할 관계 설정
+
 
 class Flights(Base): # 비행편 테이블
     __tablename__ = "flights"
@@ -72,6 +74,7 @@ class Mechanics(Base):  # 정비사 테이블
     contact_info = Column(String, nullable=False)
 
     assigned_tasks = relationship("MaintenanceTasks", secondary="maintenance_task_assignments", back_populates="assigned_mechanics",)
+    user_role = relationship("UserRoles", back_populates="mechanic")  # 역할 관계 설정
 
 class MaintenanceRecords(Base): # 유지보수 기록 테이블
     __tablename__ = "maintenance_records"
@@ -89,6 +92,8 @@ class Customers(Base): # 승객 테이블
     name = Column(String, nullable=False)
     contact_info = Column(String, nullable=False)
 
+    user_role = relationship("UserRoles", back_populates="customer")  # 역할 관계 설정
+
 class Reservations(Base): # 예약 테이블
     __tablename__ = "reservations"
     reservation_id = Column(Integer, primary_key=True, index=True)
@@ -104,11 +109,20 @@ class Mechanics(Base): # 정비사 테이블
     name = Column(String, nullable=False)
     contact_info = Column(String, nullable=False)
 
-class UserRoles(Base): # 역할 테이블
+class UserRoles(Base):  # 역할 테이블
     __tablename__ = "user_roles"
     user_role_id = Column(Integer, primary_key=True, index=True)
-    admin_id = Column(Integer, ForeignKey("administrators.admin_id"), nullable=False)
+    pilot_id = Column(Integer, ForeignKey("pilots.pilot_id"), nullable=True)
+    mechanic_id = Column(Integer, ForeignKey("mechanics.mechanic_id"), nullable=True)
+    customer_id = Column(Integer, ForeignKey("customers.customer_id"), nullable=True)
+    admin_id = Column(Integer, ForeignKey("administrators.admin_id"), nullable=True)
     role = Column(Enum("관리자", "조종사", "정비사", "고객", name="user_role"), nullable=False)
+
+    pilot = relationship("Pilots", back_populates="user_role")
+    mechanic = relationship("Mechanics", back_populates="user_role")
+    customer = relationship("Customers", back_populates="user_role")
+    admin = relationship("Administrators", back_populates="user_role")
+
 
 class Administrators(Base): # 관리자 테이블
     __tablename__ = "administrators"
@@ -116,6 +130,8 @@ class Administrators(Base): # 관리자 테이블
     name = Column(String, nullable=False)
     contact_info = Column(String)
     role = Column(String, nullable=False)
+
+    user_role = relationship("UserRoles", back_populates="admin")  # 역할 관계 설정
 
 class Licenses(Base):  # 라이선스 테이블
     __tablename__ = "licenses"
@@ -314,11 +330,15 @@ class UserRoleCreate(BaseModel):
 
 class UserRoleResponse(BaseModel):
     user_role_id: int
-    admin_id: int
     role: str
+    pilot: Optional["PilotResponse"] = None
+    mechanic: Optional["MechanicResponse"] = None
+    customer: Optional["CustomerResponse"] = None
+    admin: Optional["AdministratorResponse"] = None
 
     class Config:
         from_attributes = True
+
 
 # Administrators
 class AdministratorCreate(BaseModel):

@@ -58,7 +58,12 @@ def read_root():
 # Pilots Endpoints
 # ---------------------------------------------------
 
-# TODO Pliot 생성(면허가 있어야 하나?) 삭제
+# TODO 삭제
+
+# * - Pliot 생성(면허가 있어야 하나?)
+@app.post("/pilots", response_model=PilotResponse)
+def create_pilot_endpoint(pilot_data: PilotCreate, db: Session = Depends(get_db)):
+    return pilots.create_pilot(db, pilot_data)
 
 # FIN Administrator - 라이선스가 있는 모든 파일럿 조회 -> 비행 일정 생성과 수정 및 파일럿 할당
 @app.get("/pilots/available", response_model=List[PilotResponse])
@@ -94,7 +99,7 @@ def delete_flight_endpoint(flight_id: int, db: Session = Depends(get_db)):
     return flights.delete_flight(db, flight_id) # return message
 
 # Pilot - 자신에게 할당된 비행 일정 조회 Fin 현재 이후 일정만 조회
-@app.get("/pilot_flights/{pilot__id}/{is_current}", response_model=list[PilotFlightResponse])
+@app.get("/pilot_flights/{pilot__id}/{is_current}", response_model=List[PilotFlightResponse])
 def read_pilot_flights_endpoint(pilot_id: int, is_current: Optional[bool] = False, db: Session = Depends(get_db)):
     return pilot_flights.read_pilot_flights(db, pilot_id, is_current)
 
@@ -146,7 +151,7 @@ def assign_pilot_to_flight_endpoint(pilot_flight_data: PilotFlightCreate, db: Se
 # ---------------------------------------------------
 
 # Administrator - 유지 보수 일정 조회
-@app.get("/maintenance_tasks/", response_model=list[MaintenanceTaskResponse])
+@app.get("/maintenance_tasks/", response_model=List[MaintenanceTaskResponse])
 def read_maintenance_tasks_endpoint(
     task_type: Optional[str] = None, 
     priority: Optional[int] = None, 
@@ -165,7 +170,7 @@ def create_maintenance_task_endpoint(task_data: MaintenanceTaskCreate, db: Sessi
     return maintenance_tasks.create_maintenance_task(db, task_data)
 
 # Administrator - 유지 보수 일정 조회
-@app.get("/maintenance_tasks_all/", response_model=list[MaintenanceTaskResponse])
+@app.get("/maintenance_tasks_all/", response_model=List[MaintenanceTaskResponse])
 def get_maintenance_tasks_endpoint(spaceship_id: Optional[int] = None, db: Session = Depends(get_db)):
     return maintenance_tasks.get_maintenance_tasks(db, spaceship_id)
 
@@ -186,6 +191,13 @@ def create_maintenance_record_endpoint(record: MaintenanceRecordCreate, db: Sess
 # ---------------------------------------------------
 # Customers Endpoints
 # ---------------------------------------------------
+
+# TODO Customer 조회 삭제
+
+# * - 고객 생성
+@app.post("/customers", response_model=dict)
+def create_customer_endpoint(customer_data: CustomerCreate, db: Session = Depends(get_db)):
+    return customers.create_customer(db, customer_data)
 
 # Customers - 본인의 개인정보 수정
 @app.patch("/customers/{customer_id}", response_model=CustomerResponse)
@@ -209,10 +221,7 @@ def get_reservations_endpoint(
     reservation_date: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
-    my_reservations = reservations.get_customer_reservations(db, customer_id, status, reservation_date)
-    if not my_reservations:
-        return []
-    return my_reservations
+    return reservations.get_customer_reservations(db, customer_id, status, reservation_date)
 
 # Customer - 예약 취소
 @app.patch("/reservations/my/cancel/{reservation_id}")
@@ -223,7 +232,17 @@ def cancel_reservation_endpoint(customer_id: int, reservation_id: int, db: Sessi
 # Mechanics Endpoints
 # ---------------------------------------------------
 
-# TODO 정비사 생성, 조회, 삭제, 업데이트 필요
+# Fin 정비사 조회(id가 주어지면 해당 정비사만 조회)
+@app.get("/mechanics", response_model=list[MechanicResponse])
+def get_mechanics_endpoint(mechanic_id: Optional[int] = None, db: Session = Depends(get_db)):
+    return mechanics.get_mechanics(db, mechanic_id)
+
+# TODO 정비사 삭제, 업데이트
+
+# * - 정비사 생성
+@app.post("/mechanics", response_model=dict)
+def create_mechanic_endpoint(mechanic_data: MechanicCreate, db: Session = Depends(get_db)):
+    return mechanics.create_mechanic(db, mechanic_data)
 
 # ---------------------------------------------------
 # Administrators Endpoints
@@ -231,11 +250,16 @@ def cancel_reservation_endpoint(customer_id: int, reservation_id: int, db: Sessi
 
 # TODO 관리자 생성, 조회, 삭제, 업데이트 필요
 
+# * - 관리자 생성
+@app.post("/administrators", response_model=dict)
+def create_administrator_endpoint(admin_data: AdministratorCreate, db: Session = Depends(get_db)):
+    return administrators.create_administrator(db, admin_data)
+
 # ---------------------------------------------------
 # UserRoles Endpoints
 # ---------------------------------------------------
 
-# TODO Pilots Customers Administrators Mechanics 연결해서 회원 만들어질 때마다 더해지도록 하기.
+# Fin * - Pilots Customers Administrators Mechanics 연결해서 회원 만들어질 때마다 추가
 
 # ---------------------------------------------------
 # Licenses Endpoints
@@ -246,7 +270,7 @@ def cancel_reservation_endpoint(customer_id: int, reservation_id: int, db: Sessi
 def add_license_endpoint(pilot_id: int, license_data: LicenseCreateRequest = Depends(), license_file: UploadFile = File(...), db: Session = Depends(get_db)):
     return licenses.add_license(db, pilot_id, license_data, license_file)
 
-# 라이선스 상태 변경 TODO 아마 Administartor가 할 수 있도록 해야겠지
+# Administartor - 라이선스 상태 변경
 @app.patch("/licenses/{license_id}/status", response_model=LicenseResponse)
 def update_license_status_endpoint(license_id: int, new_status: str, db: Session = Depends(get_db)):
     return licenses.update_license_status(db, license_id, new_status) # 허가, 갱신 중, 만료

@@ -38,7 +38,7 @@ def update_maintenance_task(db: Session, task_id: int, task_data: MaintenanceTas
     if task_data.status is not None:
         task.status = task_data.status
 
-    # 정비사 할당 업데이트
+    # 정비사 할당 업데이트 Mechanic ID List가 들어가야 함
     if task_data.assigned_mechanics is not None:
         # 기존 할당된 정비사 제거
         task.assigned_mechanics.clear()

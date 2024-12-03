@@ -3,6 +3,17 @@ from models import Pilots, PilotCreate, PilotResponse, PilotUpdateRequest, Fligh
 from fastapi import HTTPException
 from datetime import datetime
 from typing import Optional, List
+import user_roles
+
+# * - 파일럿 생성
+def create_pilot(db: Session, pilot_data: PilotCreate):
+    new_pilot = Pilots(**pilot_data.model_dump())
+    db.add(new_pilot)
+    db.commit()
+    db.refresh(new_pilot)
+
+    user_roles.create_user_role(db, role="조종사", user_id=new_pilot.pilot_id, user_type="조종사")
+    return new_pilot
 
 # Pilot - 본인의 개인정보 수정
 def update_pilot_information(db: Session, pilot_id: int, pilot_data: PilotUpdateRequest):

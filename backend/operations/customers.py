@@ -1,6 +1,17 @@
 from sqlalchemy.orm import Session
 from models import Customers, CustomerCreate, CustomerResponse, CustomerUpdateRequest
 from fastapi import HTTPException
+import user_roles
+
+# * - 고객 생성
+def create_customer(db: Session, customer_data: CustomerCreate):
+    new_customer = Customers(**customer_data.model_dump())
+    db.add(new_customer)
+    db.commit()
+    db.refresh(new_customer)
+
+    user_roles.create_user_role(db, role="고객", user_id=new_customer.customer_id, user_type="고객")
+    return new_customer
 
 # Customers - 본인의 개인정보 수정
 def update_customer_information(db: Session, customer_id: int, customer_data: CustomerUpdateRequest) -> CustomerResponse:
