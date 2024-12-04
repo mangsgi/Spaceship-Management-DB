@@ -67,7 +67,7 @@ def create_pilot_endpoint(pilot_data: PilotCreate, db: Session = Depends(get_db)
 
 # FIN Administrator - 라이선스가 있는 모든 파일럿 조회 -> 비행 일정 생성과 수정 및 파일럿 할당
 @app.get("/pilots/available", response_model=List[PilotResponse])
-def retrieve_available_pilots(
+def get_available_pilots_endpoint(
     departure_time: Optional[datetime] = None,
     departure_location: Optional[str] = None,
     db: Session = Depends(get_db)
@@ -101,18 +101,18 @@ def delete_flight_endpoint(flight_id: int, db: Session = Depends(get_db)):
 # Pilot - 자신에게 할당된 비행 일정 조회 Fin 현재 이후 일정만 조회
 @app.get("/pilot_flights/{pilot__id}/{is_current}", response_model=List[PilotFlightResponse])
 def read_pilot_flights_endpoint(pilot_id: int, is_current: Optional[bool] = False, db: Session = Depends(get_db)):
-    return pilot_flights.read_pilot_flights(db, pilot_id, is_current)
+    return flights.read_pilot_flights(db, pilot_id, is_current)
 
 # Customer - 비행 일정 조회
 @app.get("/flights/search/", response_model=List[FlightResponse])
-def get_flights(
+def get_flights_endpoint(
     departure_location: Optional[str] = None,
     arrival_location: Optional[str] = None,
     departure_date: Optional[str] = None, # 날짜와 시간에서 날짜만 선택 가능
     sort_by: Optional[str] = "departure_time", # 기본값 : 출발 시간 기준 정렬 {departure_date, arrival_time 등 ..}
     db: Session = Depends(get_db)
 ):
-    return flights.search_flights(db, departure_location, arrival_location, departure_date, sort_by)
+    return flights.get_flights(db, departure_location, arrival_location, departure_date, sort_by)
 
 # Fin Administrator - 조종사가 할당되지 않은 비행 일정 조회 to 조종사 할당
 @app.get("/unassigned_flights", response_model=List[FlightResponse])

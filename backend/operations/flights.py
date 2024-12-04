@@ -81,7 +81,7 @@ def read_pilot_flights(db: Session, pilot_id: int, is_current: Optional[bool] = 
     return [FlightResponse.model_validate(flight) for flight in flights]
 
 # Customer - 비행 일정 조회
-def search_flights(
+def get_flights(
     db: Session,
     departure_location: Optional[str] = None,
     arrival_location: Optional[str] = None,
