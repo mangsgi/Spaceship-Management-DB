@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from models import Mechanics, MechanicCreate, MechanicResponse
 from fastapi import HTTPException
 from typing import Optional
-import user_roles
+from . import user_roles
 
 # Fin 정비사 조회(id가 주어지면 해당 정비사만 조회)
 def get_mechanics(db: Session, mechanic_id: Optional[int] = None) -> list[MechanicResponse]:

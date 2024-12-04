@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from models import Administrators, AdministratorCreate, AdministratorResponse
 from fastapi import HTTPException
-import user_roles
+from . import user_roles
 
 # * - 관리자 생성
 def create_administrator(db: Session, admin_data: AdministratorCreate):

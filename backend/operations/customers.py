@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from models import Customers, CustomerCreate, CustomerResponse, CustomerUpdateRequest
 from fastapi import HTTPException
-import user_roles
+from . import user_roles
 
 # * - 고객 생성
 def create_customer(db: Session, customer_data: CustomerCreate):

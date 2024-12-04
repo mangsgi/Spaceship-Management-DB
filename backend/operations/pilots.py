@@ -3,7 +3,7 @@ from models import Pilots, PilotCreate, PilotResponse, PilotUpdateRequest, Fligh
 from fastapi import HTTPException
 from datetime import datetime
 from typing import Optional, List
-import user_roles
+from . import user_roles
 
 # * - 파일럿 생성
 def create_pilot(db: Session, pilot_data: PilotCreate):

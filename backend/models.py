@@ -103,12 +103,6 @@ class Reservations(Base): # 예약 테이블
     status = Column(Enum("예약", "취소", name="reservation_status"), nullable=False)
     reservation_date = Column(DateTime, nullable=False)
 
-class Mechanics(Base): # 정비사 테이블
-    __tablename__ = "mechanics"
-    mechanic_id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    contact_info = Column(String, nullable=False)
-
 class UserRoles(Base):  # 역할 테이블
     __tablename__ = "user_roles"
     user_role_id = Column(Integer, primary_key=True, index=True)
