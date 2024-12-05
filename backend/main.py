@@ -65,12 +65,12 @@ def read_root():
 def create_pilot_endpoint(pilot_data: PilotCreate, db: Session = Depends(get_db)):
     return pilots.create_pilot(db, pilot_data)
 
-# FIN Pilot - 조회 for 접속
+# FIN Pilot - 조회 for 조종사 접속
 @app.get("/pilots", response_model=PilotResponse)
 def get_pilot_endpoint(pilot_id: int = Query(...), db: Session = Depends(get_db)):
     return pilots.get_pilot(db, pilot_id) 
 
-# FIN Administrator - 라이선스가 있는 모든 파일럿 조회 -> 비행 일정 생성과 수정 및 파일럿 할당
+# FIN Administrator - 라이선스가 있는 모든 조종사 조회 -> 비행 일정 생성과 수정 및 조종사 할당
 @app.get("/pilots/available", response_model=List[PilotResponse])
 def get_available_pilots_endpoint(
     departure_time: Optional[datetime] = None,
@@ -104,29 +104,34 @@ def delete_flight_endpoint(flight_id: int, db: Session = Depends(get_db)):
     return flights.delete_flight(db, flight_id) # return message
 
 # Pilot - 자신에게 할당된 비행 일정 조회 Fin 현재 이후 일정만 조회
-@app.get("/pilot_flights/{pilot__id}/{is_current}", response_model=List[PilotFlightResponse])
-def read_pilot_flights_endpoint(pilot_id: int, is_current: Optional[bool] = False, db: Session = Depends(get_db)):
+@app.get("/flights_by_pilot", response_model=List[FlightResponse])
+def read_pilot_flights_endpoint(pilot_id: int = Query(...), is_current: bool = Query(False), db: Session = Depends(get_db)):
     return flights.read_pilot_flights(db, pilot_id, is_current)
 
-# Customer - 비행 일정 조회
-@app.get("/flights/search/", response_model=List[FlightResponse])
+# Customer - 비행 일정 조회 for 예약
+@app.get("/flights_by_customer", response_model=List[FlightResponse])
 def get_flights_endpoint(
-    departure_location: Optional[str] = None,
-    arrival_location: Optional[str] = None,
-    departure_date: Optional[str] = None, # 날짜와 시간에서 날짜만 선택 가능
-    sort_by: Optional[str] = "departure_time", # 기본값 : 출발 시간 기준 정렬 {departure_date, arrival_time 등 ..}
+    departure_location: Optional[str] = Query(None),
+    arrival_location: Optional[str] = Query(None),
+    departure_date: Optional[date] = Query(None), # 날짜와 시간에서 날짜만 선택 가능
+    sort_by: Optional[str] = Query("departure_time"), # 기본값 : 출발 시간 기준 정렬 {departure_date, arrival_time 등 ..}
     db: Session = Depends(get_db)
 ):
     return flights.get_flights(db, departure_location, arrival_location, departure_date, sort_by)
 
 # Fin Administrator - 조종사가 할당되지 않은 비행 일정 조회 to 조종사 할당
-@app.get("/unassigned_flights", response_model=List[FlightResponse])
+@app.get("/flights_unassigned", response_model=List[FlightResponse])
 def get_unassigned_flights_endpoint(db: Session = Depends(get_db)):
     return flights.get_unassigned_flights(db)
 
 # ---------------------------------------------------
 # Spaceships Endpoints
 # ---------------------------------------------------
+
+# Fin Administrator - 우주선 생성
+@app.post("/spaceships", response_model=SpaceshipResponse)
+def create_spaceship_endpoint(spaceship_data: SpaceshipCreate, db: Session = Depends(get_db)):
+    return spaceships.create_spaceship(db, spaceship_data)
 
 # Fin Administrator - 우주선 조회 in order to 비행 일정 생성과 수정 및 우주선 할당
 @app.get("/spaceships/available", response_model=List[SpaceshipResponse])

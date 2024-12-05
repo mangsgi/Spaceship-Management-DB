@@ -8,7 +8,14 @@ from datetime import datetime
 # Administrator - 비행 일정 생성
 def create_flight(db: Session, flight: FlightCreate) -> FlightResponse:
     try:
-        db_flight = Flights(**flight.model_dump())
+        db_flight = Flights()
+        db_flight.spaceship_id = flight.spaceship_id
+        db_flight.departure_time = datetime.strptime(flight.departure_time, "%Y-%m-%dT%H:%M:%S") # Json은 datetime과 date를 처리하지 않으므로
+        db_flight. arrival_time = datetime.strptime(flight.arrival_time, "%Y-%m-%dT%H:%M:%S") # str로 가져온 다음 다시 datetime으로 변환
+        db_flight.departure_location = flight.departure_location
+        db_flight.arrival_location = flight.arrival_location
+        db_flight.status = flight.status
+        
         db.add(db_flight)
         db.commit()
         db.refresh(db_flight)
@@ -22,7 +29,7 @@ def update_flight_information(db: Session, flight_id: int, flight_data: FlightUp
     flight = db.query(Flights).filter(Flights.flight_id == flight_id).first()
     
     if not flight:
-        raise HTTPException(status_code=404, detail="비행 일정을 찾을 수 없습니다.")
+        raise HTTPException(status_code=401, detail="비행 일정을 찾을 수 없습니다.")
     try:
         if flight_data.departure_location is not None:
             flight.departure_location = flight_data.departure_location
@@ -46,11 +53,11 @@ def update_flight_information(db: Session, flight_id: int, flight_data: FlightUp
 def delete_flight(db: Session, flight_id: int):
     flight = db.query(Flights).filter(Flights.flight_id == flight_id).first()
     if not flight:
-        raise HTTPException(status_code=404, detail="비행 일정을 찾을 수 없습니다.")
+        raise HTTPException(status_code=401, detail="비행 일정을 찾을 수 없습니다.")
     try:
         db.delete(flight)
         db.commit()
-        return {"message": f"비행 일정 ID {flight_id}가 삭제되었습니다."}
+        return {"message": f"비행 일정 ID '{flight_id}'가 삭제되었습니다."}
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=f"비행 일정 삭제 중 오류 발생: {str(e)}")

@@ -1,9 +1,25 @@
 from sqlalchemy.orm import Session
 from models import Spaceships, SpaceshipCreate, SpaceshipResponse, Flights
 from fastapi import HTTPException
-from datetime import datetime
+from datetime import datetime, time
 from typing import Optional, List
 
+# Fin Administrator - 우주선 생성
+def create_spaceship(db: Session, spaceship_data: SpaceshipCreate) -> SpaceshipResponse:
+    try:
+        db_spaceship = Spaceships()
+        db_spaceship.manufacture_date = datetime.strptime(spaceship_data.manufacture_date, "%Y-%m-%d").date()
+        db_spaceship.model = spaceship_data.model
+        db_spaceship.status = spaceship_data.status
+        
+        db.add(db_spaceship)
+        db.commit()
+        db.refresh(db_spaceship)
+        return SpaceshipResponse.model_validate(db_spaceship)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"우주선 생성 중 오류 발생: {str(e)}")
+    
 # Administrator - 우주선 상태 업데이트
 def update_spaceship_status(db: Session, spaceship_id: int, new_status: str) -> SpaceshipResponse:
     spaceship = db.query(Spaceships).filter(Spaceships.spaceship_id == spaceship_id).first()
