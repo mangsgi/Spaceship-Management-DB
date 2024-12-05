@@ -1,9 +1,9 @@
-from fastapi import FastAPI, Depends, UploadFile, File, HTTPException
+from fastapi import FastAPI, Depends, UploadFile, File, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine, Base
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, date
 from operations import administrators, customers, flights, maintenance_records, maintenance_tasks, mechanics, pilot_flights, pilots, reservations, spaceships, user_roles, licenses
 from models import (
     PilotCreate, PilotResponse, PilotUpdateRequest,
@@ -17,7 +17,7 @@ from models import (
     MechanicCreate, MechanicResponse,
     AdministratorCreate, AdministratorResponse, 
     UserRoleCreate, UserRoleResponse,
-    LicenseResponse, LicenseCreateRequest
+    LicenseResponse, LicenseCreateRequest,
 )
 
 app = FastAPI() # API 엔드포인트와 설정을 이 객체에 연결
@@ -60,10 +60,15 @@ def read_root():
 
 # TODO 삭제
 
-# * - Pliot 생성(면허가 있어야 하나?)
+# * - Pliot 생성 (면허는 따로 생성하는 방향으로)
 @app.post("/pilots", response_model=PilotResponse)
 def create_pilot_endpoint(pilot_data: PilotCreate, db: Session = Depends(get_db)):
     return pilots.create_pilot(db, pilot_data)
+
+# FIN Pilot - 조회 for 접속
+@app.get("/pilots", response_model=PilotResponse)
+def get_pilot_endpoint(pilot_id: int = Query(...), db: Session = Depends(get_db)):
+    return pilots.get_pilot(db, pilot_id) 
 
 # FIN Administrator - 라이선스가 있는 모든 파일럿 조회 -> 비행 일정 생성과 수정 및 파일럿 할당
 @app.get("/pilots/available", response_model=List[PilotResponse])
@@ -267,10 +272,10 @@ def create_administrator_endpoint(admin_data: AdministratorCreate, db: Session =
 
 # Pilot - 파일럿의 새로운 라이선스 추가 (PDF 포함)
 @app.post("/pilots/{pilot_id}/licenses", response_model=LicenseResponse)
-def add_license_endpoint(pilot_id: int, license_data: LicenseCreateRequest = Depends(), license_file: UploadFile = File(...), db: Session = Depends(get_db)):
-    return licenses.add_license(db, pilot_id, license_data, license_file)
+async def add_license_endpoint(license_data: UploadFile = File(...), license_file: UploadFile = File(...), db: Session = Depends(get_db)):
+    return await licenses.add_license(db, license_data, license_file)
 
-# Administartor - 라이선스 상태 변경
+# Fin Administartor - 라이선스 상태 변경
 @app.patch("/licenses/{license_id}/status", response_model=LicenseResponse)
 def update_license_status_endpoint(license_id: int, new_status: str, db: Session = Depends(get_db)):
     return licenses.update_license_status(db, license_id, new_status) # 허가, 갱신 중, 만료

@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session
 from models import Pilots, PilotCreate, PilotResponse, PilotUpdateRequest, Flights, PilotFlights, Licenses
 from fastapi import HTTPException
 from datetime import datetime
@@ -15,21 +15,11 @@ def create_pilot(db: Session, pilot_data: PilotCreate):
     user_roles.create_user_role(db, role="조종사", user_id=new_pilot.pilot_id, user_type="조종사")
     return new_pilot
 
-# Pilot - 본인의 개인정보 수정
-def update_pilot_information(db: Session, pilot_id: int, pilot_data: PilotUpdateRequest):
+# FIN Pilot - 조회 for 접속
+def get_pilot(db: Session, pilot_id: int) -> PilotResponse:
     pilot = db.query(Pilots).filter(Pilots.pilot_id == pilot_id).first()
     if not pilot:
-        raise HTTPException(status_code=404, detail="파일럿을 찾을 수 없습니다.")
-    
-    if pilot_data.name is not None:
-        pilot.name = pilot_data.name
-    if pilot_data.contact_info is not None:
-        pilot.contact_info = pilot_data.contact_info
-    if pilot_data.emergency_contact is not None:
-        pilot.emergency_contact = pilot_data.emergency_contact
-
-    db.commit()
-    db.refresh(pilot)
+        raise HTTPException(status_code=400, detail="Pilot을 찾을 수 없습니다.")
     return PilotResponse.model_validate(pilot)
 
 # Administrator - 라이선스가 있는 모든 파일럿 조회 -> 비행 일정 생성 및 파일럿 할당
@@ -71,4 +61,21 @@ def get_available_pilots(
             
     if not available_pilots:
         return []
-    return available_pilots
+    return [PilotResponse.model_validate(available_pilot) for available_pilot in available_pilots]
+
+# Pilot - 본인의 개인정보 수정
+def update_pilot_information(db: Session, pilot_id: int, pilot_data: PilotUpdateRequest):
+    pilot = db.query(Pilots).filter(Pilots.pilot_id == pilot_id).first()
+    if not pilot:
+        raise HTTPException(status_code=404, detail="파일럿을 찾을 수 없습니다.")
+    
+    if pilot_data.name is not None:
+        pilot.name = pilot_data.name
+    if pilot_data.contact_info is not None:
+        pilot.contact_info = pilot_data.contact_info
+    if pilot_data.emergency_contact is not None:
+        pilot.emergency_contact = pilot_data.emergency_contact
+
+    db.commit()
+    db.refresh(pilot)
+    return PilotResponse.model_validate(pilot)

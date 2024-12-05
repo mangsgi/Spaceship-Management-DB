@@ -1,20 +1,30 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, UploadFile
-from models import Licenses, LicenseCreateRequest, LicenseResponse
-import io
+from models import Licenses, LicenseResponse, LicenseCreateRequest
+from datetime import date
+import json
 
 # Pilot - 파일럿의 새로운 라이선스 추가
-def add_license(db: Session, pilot_id: int, license_data: LicenseCreateRequest, license_file: UploadFile):
+async def add_license(db: Session, license_data: UploadFile, license_file: UploadFile):
     # PDF 파일 처리
     if license_file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="PDF 파일만 업로드 가능합니다.")
     file_data = license_file.file.read()
 
+    try:
+        license_data_content = await license_data.read()
+        parsed_data = json.loads(license_data_content)
+        license_request = LicenseCreateRequest(**parsed_data)  # JSON → Pydantic 모델
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=401, detail="JSON 파일만 업로드 가능합니다.")
+    except ValueError as e:
+        raise HTTPException(status_code=402, detail=f"유효하지 않은 License data: {str(e)}")
+
     # 새로운 라이선스 추가
     new_license = Licenses(
-        pilot_id=pilot_id,
-        license_number=license_data.license_number,
-        license_expiry_date=license_data.license_expiry_date,
+        pilot_id = license_request.pilot_id,
+        license_number = license_request.license_number,
+        license_expiry_date = license_request.license_expiry_date,
         license_document=file_data,
         license_status="갱신 중",
     )
@@ -24,7 +34,7 @@ def add_license(db: Session, pilot_id: int, license_data: LicenseCreateRequest, 
     db.refresh(new_license)
     return LicenseResponse.model_validate(new_license)
 
-# UPDATE License Status
+# Fin Administartor - 라이선스 상태 변경
 def update_license_status(db: Session, license_id: int, new_status: str):
     license = db.query(Licenses).filter(Licenses.license_id == license_id).first()
     if not license:

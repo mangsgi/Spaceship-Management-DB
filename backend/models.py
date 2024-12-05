@@ -351,7 +351,8 @@ class AdministratorResponse(BaseModel):
 
 # Licenses
 class LicenseCreateRequest(BaseModel):  # 라이선스 생성 요청
-    license_number: int
+    pilot_id: int
+    license_number: str
     license_expiry_date: date
 
 class LicenseResponse(BaseModel):  # 응답 데이터
