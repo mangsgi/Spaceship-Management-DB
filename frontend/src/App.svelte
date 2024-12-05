@@ -1,23 +1,16 @@
 <script>
-  import Pilot from './pages/pilot/Pilot.svelte';
-  import Mechanic from './pages/mechanic/Mechanic.svelte';
-  import Customer from './pages/customer/Customer.svelte';
-  import Admin from './pages/admin/Admin.svelte';
+  import { createEventDispatcher } from 'svelte';
+  import axios from 'axios';
+  import { writable } from 'svelte/store';
+
+  const dispatch = createEventDispatcher();
 
   // 상태 변수
-  let currentPage = 'home'; // 'home', 'pilot', 'mechanic', 'customer', 'admin'
-  let selectedButton = null; // 클릭된 버튼 번호 (1, 2, 3, 4)
-  let showInput = false; // 입력창 표시 여부
-  let inputText = ''; // 입력된 텍스트
-  let errorMessage = ''; // 오류 메시지
-
-  // 버튼 클릭 핸들러
-  function handleButtonClick(buttonId) {
-    selectedButton = buttonId;
-    showInput = true;
-    errorMessage = '';
-    inputText = '';
-  }
+  let currentPage = 'home'; // 'home', 'input', 'pilot', 'mechanic', 'customer', 'admin'
+  let selectedRole = null; // 선택된 역할
+  let inputText = ''; // 입력된 ID
+  let errorMessage = ''; // 에러 메시지
+  const loading = writable(false); // 로딩 상태
 
   // 폼 제출 핸들러
   async function handleSubmit(event) {
@@ -30,124 +23,143 @@
       return;
     }
 
+    // 로딩 상태 시작
+    loading.set(true);
+    errorMessage = '';
+
+    // 역할에 따른 엔드포인트 설정
+    let endpoint = '';
+    switch(selectedRole) {
+      case 'pilot':
+        endpoint = 'https://localhost:8080/pilots/';
+        break;
+      case 'mechanic':
+        endpoint = 'https://localhost:8080/mechanics/';
+        break;
+      case 'customer':
+        endpoint = 'https://localhost:8080/customers/';
+        break;
+      case 'admin':
+        endpoint = 'https://localhost:8080/admins/';
+        break;
+      default:
+        endpoint = 'https://localhost:8080/pilots/';
+    }
+
     try {
-      // 백엔드 API로 POST 요청 전송(막기)
-      
-      // const response = await fetch('https://your-backend-api.com/endpoint', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body: JSON.stringify({ code: inputText })
+      // const response = await axios.get(endpoint, {
+      //   params: {
+      //     id: inputText
+      //   }
       // });
 
-      // if (!response.ok) {
-      //   throw new Error('네트워크 응답이 정상적이지 않습니다.');
-      // }
-
-      // const data = await response.json();
-      
-      // 백엔드에서 `matched` 필드로 일치 여부 반환한다고 가정
-      // if (data.matched) {
+      // 응답 데이터가 존재하고 ID가 일치하는지 확인
+      // if (response.data && response.data.id === inputText) {
       if (1 == 1) {
-        // 선택된 버튼에 따라 해당 페이지로 네비게이션
-        currentPage = selectedButton === 1 ? 'pilot' :
-                      selectedButton === 2 ? 'mechanic' :
-                      selectedButton === 3 ? 'customer' :
-                      'admin';
-        // 상태 초기화
-        showInput = false;
-        selectedButton = null;
+        // 역할에 따른 페이지로 이동
+        currentPage = selectedRole;
+        // ID와 역할을 유지하기 위해 이벤트로 전달
+        dispatch('navigate', { role: selectedRole, id: inputText });
       } else {
         errorMessage = '일치하는 코드가 없습니다.';
       }
     } catch (error) {
-      console.error('오류:', error);
-      errorMessage = '요청 처리 중 오류가 발생했습니다.';
+      console.error('데이터를 가져오는 중 오류 발생:', error);
+      errorMessage = '데이터를 가져오는 중 오류가 발생했습니다.';
+    } finally {
+      loading.set(false);
     }
   }
 
-  // 홈으로 네비게이트하는 함수
-  function navigateHome() {
-    currentPage = 'home';
-    selectedButton = null;
-    showInput = false;
+  // 역할 선택 핸들러
+  function selectRole(role) {
+    selectedRole = role;
+    currentPage = 'input';
     inputText = '';
     errorMessage = '';
+  }
+
+  // 홈으로 이동하는 함수
+  function goHome() {
+    currentPage = 'home';
+    selectedRole = null;
+    inputText = '';
+    errorMessage = '';
+    dispatch('navigateHome');
   }
 </script>
 
 <style>
-  .button-container {
-    display: flex;
-    gap: 10px;
-    margin: 20px 0;
-    justify-content: center;
-  }
-  button {
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  .input-container {
-    margin-top: 20px;
-    text-align: center;
-  }
-  .input-container input {
-    padding: 8px;
-    font-size: 16px;
-    width: 200px;
-  }
-  .input-container button {
-    padding: 8px 16px;
-    font-size: 16px;
-    margin-left: 10px;
-    cursor: pointer;
-  }
-  .error {
-    color: red;
-    margin-top: 10px;
-  }
-  .home, .page {
+  .page {
     text-align: center;
     padding: 50px;
   }
+  button {
+    margin: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1em;
+  }
+  input {
+    margin: 5px;
+    padding: 5px;
+    font-size: 1em;
+  }
+  .error {
+    color: red;
+  }
+  .loading {
+    font-style: italic;
+  }
 </style>
 
-{#if currentPage === 'home'}
-  <div class="home">
-    <h1>홈 화면</h1>
-    <div class="button-container">
-      <button on:click={() => handleButtonClick(1)}>PILOT</button>
-      <button on:click={() => handleButtonClick(2)}>MECHANIC</button>
-      <button on:click={() => handleButtonClick(3)}>CUSTOMER</button>
-      <button on:click={() => handleButtonClick(4)}>ADMIN</button>
-    </div>
+<div class="page">
+  <h2>사용자 로그인</h2>
+  <button on:click={goHome}>홈으로 이동</button>
 
-    {#if showInput}
-      <div class="input-container">
-        <form on:submit|preventDefault={handleSubmit}>
-          <input
-            type="text"
-            bind:value={inputText}
-            placeholder="5자리 코드를 입력하세요"
-            maxlength="5"
-            required
-          />
-          <button type="submit">제출</button>
-        </form>
-        {#if errorMessage}
-          <div class="error">{errorMessage}</div>
-        {/if}
-      </div>
-    {/if}
-  </div>
-{:else if currentPage === 'pilot'}
-  <Pilot on:navigateHome={navigateHome} />
-{:else if currentPage === 'mechanic'}
-  <Mechanic on:navigateHome={navigateHome} />
-{:else if currentPage === 'customer'}
-  <Customer on:navigateHome={navigateHome} />
-{:else if currentPage === 'admin'}
-  <Admin on:navigateHome={navigateHome} />
-{/if}
+  {#if currentPage === 'home'}
+    <!-- 홈 페이지: 역할 선택 버튼 -->
+    <div>
+      <h3>역할을 선택하세요:</h3>
+      <button on:click={() => selectRole('pilot')}>파일럿</button>
+      <button on:click={() => selectRole('mechanic')}>메카닉</button>
+      <button on:click={() => selectRole('customer')}>고객</button>
+      <button on:click={() => selectRole('admin')}>관리자</button>
+    </div>
+  {:else if currentPage === 'input'}
+    <!-- ID 입력 페이지 -->
+    <div>
+      <h3>{selectedRole} ID 입력</h3>
+      <form on:submit|preventDefault={handleSubmit}>
+        <input
+          type="text"
+          bind:value={inputText}
+          placeholder="5자리 코드를 입력하세요"
+          maxlength="5"
+          required
+        />
+        <button type="submit">제출</button>
+      </form>
+
+      {#if errorMessage}
+        <p class="error">{errorMessage}</p>
+      {/if}
+
+      {#if $loading}
+        <p class="loading">로딩 중...</p>
+      {/if}
+    </div>
+  {:else if currentPage === 'pilot'}
+    <!-- 파일럿 페이지 -->
+    <Pilot on:navigateHome={goHome} />
+  {:else if currentPage === 'mechanic'}
+    <!-- 메카닉 페이지 -->
+    <Mechanic on:navigateHome={goHome} />
+  {:else if currentPage === 'customer'}
+    <!-- 고객 페이지 -->
+    <Customer on:navigateHome={goHome} />
+  {:else if currentPage === 'admin'}
+    <!-- 관리자 페이지 -->
+    <Admin on:navigateHome={goHome} />
+  {/if}
+</div>
