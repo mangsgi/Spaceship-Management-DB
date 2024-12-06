@@ -1,11 +1,15 @@
 <!-- src/routes/pilot/page.svelte -->
 <script>
   import { Link, navigate } from 'svelte-routing';
+  import { onMount } from 'svelte';
+  import { userId } from '../../stores.js'; // stores.js의 경로에 따라 조정
 
   function navigateHome() {
     navigate('/');
   }
-  
+
+  // 반응형 선언으로 userId 값이 변경될 때마다 pilotId 업데이트
+  $: pilotId = $userId;
 </script>
 
 <style>
@@ -39,6 +43,7 @@
 
 <div class="pilot-page">
   <h1>파일럿 페이지</h1>
+  <p>파일럿 ID: {pilotId}</p>
   <button on:click={navigateHome}>홈으로 돌아가기</button>
   <!-- 파일럿 관련 내용 추가 -->
 
