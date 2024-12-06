@@ -21,7 +21,16 @@ def get_maintenance_tasks(db: Session, spaceship_id: Optional[int] = None) -> li
     if spaceship_id:
         query = query.filter(MaintenanceTasks.spaceship_id == spaceship_id)
     schedules = query.order_by(MaintenanceTasks.deadline).all()
-    return [MaintenanceTaskResponse.model_validate(schedule) for schedule in schedules]
+    
+    responses = []
+    for schedule in schedules:
+        response_data = MaintenanceTaskResponse.model_validate({
+            **schedule.__dict__,
+            "assigned_mechanics": [mechanic.mechanic_id for mechanic in schedule.assigned_mechanics]
+        })
+        responses.append(response_data)
+    
+    return responses
 
 # Administrator - 유지 보수 일정 수정
 def update_maintenance_task(db: Session, task_id: int, task_data: MaintenanceTaskUpdateRequest) -> MaintenanceTaskResponse:
@@ -48,10 +57,15 @@ def update_maintenance_task(db: Session, task_id: int, task_data: MaintenanceTas
         if len(mechanics) != len(task_data.assigned_mechanics):
             raise HTTPException(status_code=400, detail="할당하려는 정비사 중 일부를 찾을 수 없습니다.")
         task.assigned_mechanics.extend(mechanics)
-        
+    
     db.commit()
     db.refresh(task)
-    return MaintenanceTaskResponse.model_validate(task)
+    
+    response_data = MaintenanceTaskResponse.model_validate({
+        **task.__dict__,
+        "assigned_mechanics": [mechanic.mechanic_id for mechanic in task.assigned_mechanics]
+    })
+    return response_data
 
 # Mechanic - 본인이 할당된 유지 보수 작업 조회
 def get_maintenance_tasks_by_mechanic(db: Session, mechanic_id: int) -> List[MaintenanceTaskResponse]:
@@ -66,8 +80,12 @@ def get_maintenance_tasks_by_mechanic(db: Session, mechanic_id: int) -> List[Mai
         .order_by(MaintenanceTasks.deadline.asc())
         .all()
     )
-
-    if not tasks:
-        return []
-    return [MaintenanceTaskResponse.model_validate(task) for task in tasks]
-
+    
+    responses = []
+    for task in tasks:
+        response_data = MaintenanceTaskResponse.model_validate({
+            **task.__dict__,
+            "assigned_mechanics": [mechanic.mechanic_id for mechanic in task.assigned_mechanics]
+        })
+        responses.append(response_data)
+    return responses

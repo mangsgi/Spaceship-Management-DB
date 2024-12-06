@@ -168,8 +168,8 @@ class FlightCreate(BaseModel):
     spaceship_id: int
     departure_location: str
     arrival_location: str
-    departure_time: str # -> datetime
-    arrival_time: str # -> datetime
+    departure_time: datetime
+    arrival_time: datetime
     status: str
 
 class FlightResponse(BaseModel):
@@ -177,7 +177,7 @@ class FlightResponse(BaseModel):
     spaceship_id: int
     departure_location: str
     arrival_location: str
-    departure_time: datetime
+    departure_time: datetime 
     arrival_time: datetime
     status: str
 
@@ -194,7 +194,7 @@ class FlightUpdateRequest(BaseModel): # 비행 일정 수정용 테이블
 # Spaceships
 class SpaceshipCreate(BaseModel):
     model: str
-    manufacture_date: str # -> date
+    manufacture_date: date
     status: str
 
 class SpaceshipResponse(BaseModel):
@@ -205,6 +205,9 @@ class SpaceshipResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class SpaceshipUpdateRequest(BaseModel):
+    status: str
 
 # PilotFlights
 class PilotFlightCreate(BaseModel):

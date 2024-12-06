@@ -8,13 +8,7 @@ from datetime import datetime
 # Administrator - 비행 일정 생성
 def create_flight(db: Session, flight: FlightCreate) -> FlightResponse:
     try:
-        db_flight = Flights()
-        db_flight.spaceship_id = flight.spaceship_id
-        db_flight.departure_time = datetime.strptime(flight.departure_time, "%Y-%m-%dT%H:%M:%S") # Json은 datetime과 date를 처리하지 않으므로
-        db_flight. arrival_time = datetime.strptime(flight.arrival_time, "%Y-%m-%dT%H:%M:%S") # str로 가져온 다음 다시 datetime으로 변환
-        db_flight.departure_location = flight.departure_location
-        db_flight.arrival_location = flight.arrival_location
-        db_flight.status = flight.status
+        db_flight = Flights(**flight.model_dump())
         
         db.add(db_flight)
         db.commit()

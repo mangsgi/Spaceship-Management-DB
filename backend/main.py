@@ -8,7 +8,7 @@ from operations import administrators, customers, flights, maintenance_records, 
 from models import (
     PilotCreate, PilotResponse, PilotUpdateRequest,
     FlightCreate, FlightResponse, FlightUpdateRequest,
-    SpaceshipCreate, SpaceshipResponse,
+    SpaceshipCreate, SpaceshipResponse, SpaceshipUpdateRequest,
     PilotFlightCreate, PilotFlightResponse,
     MaintenanceTaskCreate, MaintenanceTaskResponse, MaintenanceTaskUpdateRequest,
     MaintenanceRecordCreate, MaintenanceRecordResponse, 
@@ -25,8 +25,8 @@ app = FastAPI() # API 엔드포인트와 설정을 이 객체에 연결
 origins = [ # CORS를 설정하여, 다른 도메인에서의 API 요청을 허용
     # "http://localhost:5000",  # Svelte 기본 포트
     # "http://localhost:3000",  # Svelte 다른 포트 사용 시
-    "http://localhost:8080",  # Svelte 다른 포트 사용 시
-    # "http://localhost:8000",  # uvicorn 기본 포트
+    # "http://localhost:8080",  # Svelte 다른 포트 사용 시
+    "http://localhost:8000",  # uvicorn 기본 포트
     # 필요에 따라 다른 도메인 추가
 ]
 
@@ -136,16 +136,16 @@ def create_spaceship_endpoint(spaceship_data: SpaceshipCreate, db: Session = Dep
 # Fin Administrator - 우주선 조회 in order to 비행 일정 생성과 수정 및 우주선 할당
 @app.get("/spaceships/available", response_model=List[SpaceshipResponse])
 def retrieve_available_spaceships(
-    departure_time: Optional[datetime] = None, 
-    arrival_time: Optional[datetime] = None, 
+    departure_time: Optional[datetime] = Query(None), 
+    arrival_time: Optional[datetime] = Query(None), 
     db: Session = Depends(get_db)
 ):
     return spaceships.get_available_spaceships(db, departure_time, arrival_time)
 
 # Administrator - 우주선 상태 업데이트
-@app.patch("/spaceships/{spaceship_id}/status", response_model=MaintenanceTaskResponse) # "운영 중", "점검 중"
-def update_spaceship_status_endpoint(spaceship_id: int, update_status = str, db: Session = Depends(get_db)):
-    return spaceships.update_spaceship_status(db, spaceship_id, update_status) 
+@app.patch("/spaceships/{spaceship_id}/status", response_model=SpaceshipResponse) # "운영 중", "점검 중"
+def update_spaceship_status_endpoint(spaceship_id: int, spaceship_update_data: SpaceshipUpdateRequest, db: Session = Depends(get_db)):
+    return spaceships.update_spaceship_status(db, spaceship_id, spaceship_update_data) 
 
 # ---------------------------------------------------
 # PilotFlights Endpoints
@@ -160,28 +160,19 @@ def assign_pilot_to_flight_endpoint(pilot_flight_data: PilotFlightCreate, db: Se
 # MaintenanceTasks Endpoints
 # ---------------------------------------------------
 
-# Administrator - 유지 보수 일정 조회
-@app.get("/maintenance_tasks/", response_model=List[MaintenanceTaskResponse])
-def read_maintenance_tasks_endpoint(
-    task_type: Optional[str] = None, 
-    priority: Optional[int] = None, 
-    deadline: Optional[str] = None, 
-    db: Session = Depends(get_db)):
-    return maintenance_tasks.get_maintenance_tasks(db, task_type, priority, deadline)
+# Administrator - 유지 보수 일정 생성
+@app.post("/maintenance_tasks", response_model=MaintenanceTaskResponse)
+def create_maintenance_task_endpoint(task_data: MaintenanceTaskCreate, db: Session = Depends(get_db)):
+    return maintenance_tasks.create_maintenance_task(db, task_data)
 
 # Fin Mechanic - 본인이 할당된 유지 보수 작업 조회
 @app.get("/maintenance_tasks/mechanic/{mechanic_id}", response_model=List[MaintenanceTaskResponse])
 def read_maintenance_tasks_for_mechanic(mechanic_id: int, db: Session = Depends(get_db)):
     return maintenance_tasks.get_maintenance_tasks_by_mechanic(db, mechanic_id)
 
-# Administrator - 유지 보수 일정 생성
-@app.post("/maintenance_tasks/", response_model=MaintenanceTaskResponse)
-def create_maintenance_task_endpoint(task_data: MaintenanceTaskCreate, db: Session = Depends(get_db)):
-    return maintenance_tasks.create_maintenance_task(db, task_data)
-
 # Administrator - 유지 보수 일정 조회
-@app.get("/maintenance_tasks_all/", response_model=List[MaintenanceTaskResponse])
-def get_maintenance_tasks_endpoint(spaceship_id: Optional[int] = None, db: Session = Depends(get_db)):
+@app.get("/maintenance_tasks_all", response_model=List[MaintenanceTaskResponse])
+def get_maintenance_tasks_endpoint(spaceship_id: Optional[int] = Query(None), db: Session = Depends(get_db)):
     return maintenance_tasks.get_maintenance_tasks(db, spaceship_id)
 
 # Administrator - 유지 보수 일정 수정
@@ -190,11 +181,17 @@ def update_maintenance_task_endpoint(task_id: int, task_data: MaintenanceTaskUpd
     return maintenance_tasks.update_maintenance_task(db, task_id, task_data)
 
 # ---------------------------------------------------
+# MaintenanceTaskAssignments 
+# ---------------------------------------------------
+
+# FIN 현재로서는 사용할 곳이 없다.
+
+# ---------------------------------------------------
 # MaintenanceRecords Endpoints
 # ---------------------------------------------------
 
 # Mechanic - 유지 보수 작업 기록하기
-@app.post("/maintenance_records/", response_model=MaintenanceRecordResponse)
+@app.post("/maintenance_records", response_model=MaintenanceRecordResponse)
 def create_maintenance_record_endpoint(record: MaintenanceRecordCreate, db: Session = Depends(get_db)):
     return maintenance_records.create_maintenance_record(db, record)
 
@@ -250,7 +247,7 @@ def get_mechanics_endpoint(mechanic_id: Optional[int] = None, db: Session = Depe
 # TODO 정비사 삭제, 업데이트
 
 # * - 정비사 생성
-@app.post("/mechanics", response_model=dict)
+@app.post("/mechanics", response_model=MechanicResponse)
 def create_mechanic_endpoint(mechanic_data: MechanicCreate, db: Session = Depends(get_db)):
     return mechanics.create_mechanic(db, mechanic_data)
 
@@ -261,7 +258,7 @@ def create_mechanic_endpoint(mechanic_data: MechanicCreate, db: Session = Depend
 # TODO 관리자 생성, 조회, 삭제, 업데이트 필요
 
 # * - 관리자 생성
-@app.post("/administrators", response_model=dict)
+@app.post("/administrators", response_model=AdministratorResponse)
 def create_administrator_endpoint(admin_data: AdministratorCreate, db: Session = Depends(get_db)):
     return administrators.create_administrator(db, admin_data)
 
