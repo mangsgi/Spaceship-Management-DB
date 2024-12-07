@@ -1,7 +1,6 @@
 <!-- src/routes/pilot/page.svelte -->
 <script>
   import { Link, navigate } from 'svelte-routing';
-  import { onMount } from 'svelte';
   import { userId } from '../../stores.js'; // stores.js의 경로에 따라 조정
 
   function navigateHome() {
