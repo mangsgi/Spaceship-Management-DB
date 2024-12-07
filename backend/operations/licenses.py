@@ -80,8 +80,8 @@ def update_license_status(db: Session, license_id: int, license_data: LicenseUpd
 def get_licenses(db: Session, pilot_id: Optional[int] = None):
     if pilot_id is not None:
         licenses = db.query(Licenses).filter(Licenses.pilot_id == pilot_id).first()
-        if not license:
-            raise HTTPException(status_code=404, detail="해당 유저를 찾을 수 없습니다.")
+        if not licenses:
+            raise HTTPException(status_code=404, detail="해당 조종사를 찾을 수 없습니다.")
         return [convert_to_response(license) for license in licenses]
     else:
         licenses = db.query(Licenses).all()

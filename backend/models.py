@@ -55,7 +55,7 @@ class MaintenanceTasks(Base):  # 우주선 유지보수 테이블
     task_type = Column(Enum("정기 점검", "수리", name="task_type"), nullable=False)
     priority = Column(Integer, nullable=False)
     deadline = Column(Date, nullable=False)
-    status = Column(Enum("대기 중", "완료", name="task_status"), nullable=False)
+    status = Column(Enum("대기 중", "완료", "진행 중", name="task_status"), nullable=False)
 
     spaceship = relationship("Spaceships", back_populates="maintenance_tasks")
     maintenance_records = relationship("MaintenanceRecords", back_populates="maintenance_task")

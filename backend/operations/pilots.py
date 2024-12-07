@@ -13,14 +13,14 @@ def create_pilot(db: Session, pilot_data: PilotCreate):
     db.refresh(new_pilot)
 
     user_roles.create_user_role(db, role="조종사", user_id=new_pilot.pilot_id, user_type="조종사")
-    return new_pilot
+    return PilotResponse.model_validate(new_pilot)
 
 # FIN Pilot - 조회 for 접속
 def get_pilot(db: Session, pilot_id: int) -> PilotResponse:
     pilot = db.query(Pilots).filter(Pilots.pilot_id == pilot_id).first()
     if not pilot:
         raise HTTPException(status_code=400, detail="Pilot을 찾을 수 없습니다.")
-    return PilotResponse.model_validate(pilot)
+    return [PilotResponse.model_validate(pilot)]
 
 # Administrator - 라이선스가 있는 모든 조종사 조회 -> 비행 일정 생성 및 조종사 할당
 def get_available_pilots(
