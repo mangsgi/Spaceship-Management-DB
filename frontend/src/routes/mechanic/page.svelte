@@ -35,10 +35,10 @@
 
   <div>
     <h3>골라 들어가기</h3>
-    <Link to="/mechanic/FindMyRepairAndRecord">
+    <Link to="/mechanic/findMyRepairAndRecord">
       <button>본인 수리 조회 및 유지보수 기록 작성</button>
     </Link>
-    <Link to="/mechanic/MySpaceshipRepair">
+    <Link to="/mechanic/mySpaceshipRepair">
       <button>수리할 우주선 상태 조회</button>
     </Link>
   </div>

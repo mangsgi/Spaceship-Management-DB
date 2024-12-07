@@ -1,34 +1,34 @@
 <script>
-    // FindPilotFlight 페이지에 필요한 로직 추가
-  import { userId } from '../../../stores.js'; // stores.js의 경로에 따라 조정
+  import { userId } from '../../../stores.js'; // 경로에 따라 조정
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
   import axios from 'axios';
 
-    // 반응형 선언으로 userId 값이 변경될 때마다 pilotId 업데이트
-    $: mechanicId = $userId;
-    const loading = writable(false);
-    let errorMessage = '';
+  let mechanicId;
+  $: mechanicId = $userId;  // $userId 값이 변경될 때 mechanicId도 갱신됨
 
-    let data = [];
+  const loading = writable(false);
+  let errorMessage = '';
 
-    async function findMyFlight() {
+  let maintenanceTasks = [];
+  let spaceshipData = [];
 
+  async function fetchMaintenanceTasks() {
     loading.set(true);
-    
-
-    let endpoint = 'http://localhost:8000/flights_by_pilot';
+    let endpoint = 'http://localhost:8000/maintenance_tasks/mechanic';
 
     try {
-      const response = await axios.get(endpoint, { params: { mechanicId: mechanicId } });
+      const response = await axios.get(endpoint, { params: { mechanic_id: mechanicId } });
 
-      // 임시 조건 (실제 응답 검증으로 대체)
       if (response.data && Array.isArray(response.data)) {
-        // 역할에 따른 URL로 네비게이션
-        data = response.data;
-        console.log('결과 : ', data);
-        
-      } 
+        maintenanceTasks = response.data;
+
+        // 중복 spaceship_id를 제거하기 위해 Set 사용
+        const spaceshipIds = [...new Set(maintenanceTasks.map(task => task.spaceship_id))];
+
+        // 우주선 정보 가져오기
+        await fetchSpaceshipData(spaceshipIds);
+      }
     } catch (error) {
       console.error('데이터를 가져오는 중 오류 발생:', error);
       if (error.response) {
@@ -47,68 +47,83 @@
     }
   }
 
-  onMount(() => {
-        console.log('컴포넌트가 마운트되었습니다.');
-        // 여기에 초기화 코드나 데이터 페칭 코드를 추가할 수 있습니다.
-        findMyFlight();
-    });
-</script>
-  
-<style>
-  .page {
-    text-align: center;
-    padding: 50px;
-  }
-  button {
-    margin: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 1em;
-  }
-  input {
-    margin: 5px;
-    padding: 5px;
-    font-size: 1em;
-  }
-  .error {
-    color: red;
-  }
-  .loading {
-    font-style: italic;
-  }
-</style>
-  
-  <div class="page">
-    <h2>파일럿 비행 찾기</h2>
-    <p>파일럿 ID: {pilotId}</p>
-    <!-- 하위 페이지 내용 추가 -->
+  async function fetchSpaceshipData(spaceshipIds) {
+    try {
+      // 여러 우주선 정보를 비동기로 가져온 뒤, 모두 Promise.all로 처리
+      const promises = spaceshipIds.map(async id => {
+        const res = await axios.get('http://localhost:8000/spaceships', { params: { spaceship_id: id } });
+        return res.data; // 각 응답은 배열 형태
+      });
 
-    <!-- 데이터 표시를 위한 테이블 구조 -->
-  <table>
-    <thead>
-      <tr>
-        <th>Flight ID</th>
-        <th>Spaceship ID</th>
-        <th>Departure Location</th>
-        <th>Arrival Location</th>
-        <th>Departure Time</th>
-        <th>Arrival Time</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each data as flight}
+      const results = await Promise.all(promises);
+      // 모든 결과를 하나의 배열로 합침
+      spaceshipData = results.flat();
+    } catch (error) {
+      console.error('우주선 데이터를 가져오는 중 오류 발생:', error);
+    }
+  }
+
+  onMount(() => {
+    console.log('컴포넌트가 마운트되었습니다.');
+    fetchMaintenanceTasks();
+  });
+</script>
+
+<style>
+.page {
+  text-align: center;
+  padding: 50px;
+}
+table {
+  border-collapse: collapse;
+  margin: 20px auto;
+}
+th, td {
+  border: 1px solid #333;
+  padding: 10px;
+}
+.error {
+  color: red;
+}
+.loading {
+  font-style: italic;
+}
+</style>
+
+<div class="page">
+  <h2>우주선 정보 조회</h2>
+  {#if $loading}
+    <p class="loading">로딩 중...</p>
+  {/if}
+
+  {#if errorMessage}
+    <p class="error">{errorMessage}</p>
+  {/if}
+
+  <!-- 우주선 정보 표시 테이블 -->
+  {#if spaceshipData.length > 0}
+    <h3>작업중인 우주선 정보</h3>
+    <table>
+      <thead>
         <tr>
-          <td>{flight.flight_id}</td>
-          <td>{flight.spaceship_id}</td>
-          <td>{flight.departure_location}</td>
-          <td>{flight.arrival_location}</td>
-          <td>{new Date(flight.departure_time).toLocaleString()}</td>
-          <td>{new Date(flight.arrival_time).toLocaleString()}</td>
-          <td>{flight.status}</td>
+          <th>Spaceship ID</th>
+          <th>Model</th>
+          <th>Manufacture Date</th>
+          <th>Status</th>
+          <th>Last Maintenance Date</th>
         </tr>
-      {/each}
-    </tbody>
-  </table>
-  </div>
-  
+      </thead>
+      <tbody>
+        {#each spaceshipData as spaceship}
+          <tr>
+            <td>{spaceship.spaceship_id}</td>
+            <td>{spaceship.model}</td>
+            <td>{new Date(spaceship.manufacture_date).toLocaleDateString()}</td>
+            <td>{spaceship.status}</td>
+            <td>{new Date(spaceship.last_maintenance_date).toLocaleDateString()}</td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+  {/if}
+</div>
