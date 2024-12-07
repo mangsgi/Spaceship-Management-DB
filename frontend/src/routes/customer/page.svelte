@@ -28,8 +28,8 @@
 </style>
 
 <div class="customer-page">
-  <h2>정비사 페이지</h2>
-  <p>정비사 ID: {customerId}</p>
+  <h2>고객 페이지</h2>
+  <p>고객 ID: {customerId}</p>
   <button on:click={navigateHome}>홈으로 돌아가기</button>
   <!-- 정비사 관련 내용 추가 -->
 
