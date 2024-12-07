@@ -146,7 +146,7 @@ def retrieve_available_spaceships(
     return spaceships.get_available_spaceships(db, departure_time, arrival_time)
 
 # FIN Mechanic - 수리할 우주선 조회
-@app.get("/spaceships", response_model=List(SpaceshipResponse))
+@app.get("/spaceships", response_model=List[SpaceshipResponse])
 def get_spaceships_endpoint(spaceship_id: Optional[int] = Query(None), db: Session = Depends(get_db)):
     return spaceships.get_spaceships(db, spaceship_id)
 
