@@ -13,8 +13,8 @@ from models import (
     MaintenanceTaskCreate, MaintenanceTaskResponse, MaintenanceTaskUpdateRequest,
     MaintenanceRecordCreate, MaintenanceRecordResponse, 
     CustomerCreate, CustomerResponse, CustomerUpdateRequest,
-    ReservationCreate, ReservationResponse,
-    MechanicCreate, MechanicResponse,
+    ReservationCreate, ReservationResponse, ReservationUpdateRequest,
+    MechanicCreate, MechanicResponse, 
     AdministratorCreate, AdministratorResponse, 
     UserRoleCreate, UserRoleResponse,
     LicenseResponse, LicenseCreateRequest,
@@ -202,7 +202,7 @@ def create_maintenance_record_endpoint(record: MaintenanceRecordCreate, db: Sess
 # TODO Customer 조회 삭제
 
 # * - 고객 생성
-@app.post("/customers", response_model=dict)
+@app.post("/customers", response_model=CustomerResponse)
 def create_customer_endpoint(customer_data: CustomerCreate, db: Session = Depends(get_db)):
     return customers.create_customer(db, customer_data)
 
@@ -216,24 +216,24 @@ def update_customer_information_endpoint(customer_id: int, customer_data: Custom
 # ---------------------------------------------------
 
 # Customer - 좌석 예약
-@app.post("/reservations/", response_model=ReservationResponse)
+@app.post("/reservations", response_model=ReservationResponse)
 def reserve_flight_seat_endpoint(reservation_data: ReservationCreate, db: Session = Depends(get_db)):
     return reservations.reserve_flight_seat(db, reservation_data)
 
 # Customer - 예약 조회
 @app.get("/reservations/my", response_model=List[ReservationResponse])
 def get_reservations_endpoint(
-    customer_id: int,
-    status: Optional[str] = None,
-    reservation_date: Optional[str] = None,
+    customer_id: int = Query(...),
+    status: Optional[str] = Query(None),
+    reservation_date: Optional[date] = Query(None),
     db: Session = Depends(get_db)
 ):
     return reservations.get_customer_reservations(db, customer_id, status, reservation_date)
 
 # Customer - 예약 취소
-@app.patch("/reservations/my/cancel/{reservation_id}")
-def cancel_reservation_endpoint(customer_id: int, reservation_id: int, db: Session = Depends(get_db)):
-    return reservations.cancel_customer_reservation(db, customer_id, reservation_id) # dictionary 리턴
+@app.patch("/reservations/my/cancel/{reservation_id}", response_model=ReservationResponse)
+def cancel_reservation_endpoint(customer_data: ReservationUpdateRequest, reservation_id: int, db: Session = Depends(get_db)):
+    return reservations.cancel_customer_reservation(db, customer_data, reservation_id) # dictionary 리턴
 
 # ---------------------------------------------------
 # Mechanics Endpoints
@@ -241,7 +241,7 @@ def cancel_reservation_endpoint(customer_id: int, reservation_id: int, db: Sessi
 
 # Fin 정비사 조회(id가 주어지면 해당 정비사만 조회)
 @app.get("/mechanics", response_model=list[MechanicResponse])
-def get_mechanics_endpoint(mechanic_id: Optional[int] = None, db: Session = Depends(get_db)):
+def get_mechanics_endpoint(mechanic_id: Optional[int] = Query(None), db: Session = Depends(get_db)):
     return mechanics.get_mechanics(db, mechanic_id)
 
 # TODO 정비사 삭제, 업데이트
@@ -279,7 +279,7 @@ async def add_license_endpoint(license_data: UploadFile = File(...), license_fil
 
 # Fin Administartor - 라이선스 상태 변경
 @app.patch("/licenses/{license_id}/status", response_model=LicenseResponse)
-def update_license_status_endpoint(license_id: int, new_status: str, db: Session = Depends(get_db)):
+def update_license_status_endpoint(license_id: int, new_status: LicenseUpdateRequest, db: Session = Depends(get_db)):
     return licenses.update_license_status(db, license_id, new_status) # 허가, 갱신 중, 만료
 
 # TODO License 정보 조회 (PDF 포함)

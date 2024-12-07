@@ -122,7 +122,7 @@ class Administrators(Base): # 관리자 테이블
     __tablename__ = "administrators"
     admin_id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
-    contact_info = Column(String)
+    contact_info = Column(String, nullable=False)
     role = Column(String, nullable=False)
 
     user_role = relationship("UserRoles", back_populates="admin")  # 역할 관계 설정
@@ -206,7 +206,7 @@ class SpaceshipResponse(BaseModel):
     class Config:
         from_attributes = True
 
-class SpaceshipUpdateRequest(BaseModel):
+class SpaceshipUpdateRequest(BaseModel): # 우주선 상태 수정용 테이블
     status: str
 
 # PilotFlights
@@ -307,6 +307,9 @@ class ReservationResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class ReservationUpdateRequest(BaseModel): # 예약 취소용 테이블
+    customer_id: int
+
 # Mechanics
 class MechanicCreate(BaseModel):
     name: str
@@ -336,17 +339,16 @@ class UserRoleResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
 # Administrators
 class AdministratorCreate(BaseModel):
     name: str
-    contact_info: Optional[str] = None
+    contact_info: str
     role: str
 
 class AdministratorResponse(BaseModel):
     admin_id: int
     name: str
-    contact_info: Optional[str]
+    contact_info: str
     role: str
 
     class Config:
@@ -367,3 +369,6 @@ class LicenseResponse(BaseModel):  # 응답 데이터
 
     class Config:
         from_attributes = True
+        
+class LicenseUpdateRequest(BaseModel): # 라이선스 상태 수정용 테이블
+    new_status: str
