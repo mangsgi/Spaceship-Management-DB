@@ -39,7 +39,7 @@
         idKey = 'customer_id'; // customer_id로 키 이름 설정
         break;
       case 'admin':
-        endpoint = 'http://localhost:8000/admins';
+        endpoint = 'http://localhost:8000/administrators';
         params['admin_id'] = inputText; // admin_id로 키 이름 설정
         idKey = 'admin_id'; // admin_id로 키 이름 설정
         break;
@@ -49,18 +49,27 @@
         idKey = 'pilot_id'; // 기본적으로 pilot_id로 키 이름 설정
     }
 
+    // 
     try {
       const response = await axios.get(endpoint, { params });
 
-      // 임시 조건 (실제 응답 검증으로 대체)
-      if (response.data && response.data[idKey] === inputText) {
-        // 역할에 따른 URL로 네비게이션
-        userId.set(inputText);
-        navigate(`/${selectedRole}`);
+      // response.data가 배열인지 확인하고, 배열 내에서 inputText와 일치하는 idKey를 찾음
+      if (Array.isArray(response.data)) {
+        const matchedItem = response.data.find(item => item[idKey] === inputText);
+
+        if (matchedItem) {
+          // 역할에 따른 URL로 네비게이션
+          userId.set(inputText);
+          navigate(`/${selectedRole}`);
+        } else {
+          // 배열 내에 일치하는 데이터가 없는 경우
+          console.log('Received data:', response.data);
+          errorMessage = '일치하는 데이터를 찾을 수 없습니다.';
+        }
       } else {
-        // 데이터는 있으나 예상된 ID 값이 아니거나 다른 형태의 응답인 경우
-        console.log('Received data:', response.data);
-        errorMessage = '일치하는 데이터를 찾을 수 없습니다.';
+        // response.data가 배열이 아닌 경우 (예외 처리)
+        console.log('Unexpected data format:', response.data);
+        errorMessage = '데이터 형식이 예상과 다릅니다.';
       }
     } catch (error) {
       console.error('데이터를 가져오는 중 오류 발생:', error);
