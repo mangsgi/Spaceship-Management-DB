@@ -10,67 +10,41 @@
     const loading = writable(false);
     let errorMessage = '';
 
-    let data = [
-      {
-            "flight_id": 1,
-            "spaceship_id": 1,
-            "departure_location": "Earth",
-            "arrival_location": "Mars",
-            "departure_time": "2024-11-24T10:00:00",
-            "arrival_time": "2024-11-24T12:00:00",
-            "status": "예정"
-        },
-      {
-            "flight_id": 2,
-            "spaceship_id": 2,
-            "departure_location": "Earth",
-            "arrival_location": "Venus",
-            "departure_time": "2024-11-24T10:00:00",
-            "arrival_time": "2024-12-04T12:00:00",
-            "status": "예정"
-        }
-      ];
+    let data = [];
 
     async function findMyFlight() {
 
     loading.set(true);
     
 
-    // let endpoint = 'http://localhost:8000/flights_by_pilot';
+    let endpoint = 'http://localhost:8000/flights_by_pilot';
 
-    // try {
-    //   const response = await axios.get(endpoint, { pilot_id : userId });
+    try {
+      const response = await axios.get(endpoint, { params: { pilot_id: pilotId } });
 
       // 임시 조건 (실제 응답 검증으로 대체)
-      // if (response.data && response.data.$userId === inputText) {
+      if (response.data && Array.isArray(response.data)) {
         // 역할에 따른 URL로 네비게이션
-        // console.log('결과 : ', response.data);
-      //   response.data = {
-      //       "flight_id": 3,
-      //       "spaceship_id": 1,
-      //       "departure_location": "Earth",
-      //       "arrival_location": "Mars",
-      //       "departure_time": "2024-11-24T10:00:00",
-      //       "arrival_time": "2024-11-24T12:00:00",
-      //       "status": "예정"
-      //   }
-      // } 
-    // } catch (error) {
-    //   console.error('데이터를 가져오는 중 오류 발생:', error);
-    //   if (error.response) {
-    //     // 서버 응답 오류 처리
-    //     if (error.response.status === 400) {
-    //       errorMessage = '잘못된 요청입니다. 입력 ID를 확인해주세요.';
-    //     } else {
-    //       errorMessage = `서버 오류 발생: ${error.response.status}`;
-    //     }
-    //   } else {
-    //     // 요청이 서버에 도달하지 못한 경우
-    //     errorMessage = '서버에 연결할 수 없습니다.';
-    //   }
-    // } finally {
-    //   loading.set(false);
-    // }
+        data = response.data;
+        console.log('결과 : ', data);
+        
+      } 
+    } catch (error) {
+      console.error('데이터를 가져오는 중 오류 발생:', error);
+      if (error.response) {
+        // 서버 응답 오류 처리
+        if (error.response.status === 400) {
+          errorMessage = '잘못된 요청입니다. 입력 ID를 확인해주세요.';
+        } else {
+          errorMessage = `서버 오류 발생: ${error.response.status}`;
+        }
+      } else {
+        // 요청이 서버에 도달하지 못한 경우
+        errorMessage = '서버에 연결할 수 없습니다.';
+      }
+    } finally {
+      loading.set(false);
+    }
   }
 
   onMount(() => {

@@ -25,8 +25,8 @@ app = FastAPI() # API 엔드포인트와 설정을 이 객체에 연결
 origins = [ # CORS를 설정하여, 다른 도메인에서의 API 요청을 허용
     # "http://localhost:5000",  # Svelte 기본 포트
     # "http://localhost:3000",  # Svelte 다른 포트 사용 시
-    # "http://localhost:8080",  # Svelte 다른 포트 사용 시
-    "http://localhost:8000",  # uvicorn 기본 포트
+    "http://localhost:8080",  # Svelte 다른 포트 사용 시
+    # "http://localhost:8000",  # uvicorn 기본 포트
     # 필요에 따라 다른 도메인 추가
 ]
 
