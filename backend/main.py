@@ -58,8 +58,6 @@ def read_root():
 # Pilots Endpoints
 # ---------------------------------------------------
 
-# TODO 삭제
-
 # * - 조종사 생성 (면허는 따로 생성하는 방향으로)
 @app.post("/pilots", response_model=PilotResponse)
 def create_pilot_endpoint(pilot_data: PilotCreate, db: Session = Depends(get_db)):
@@ -204,17 +202,25 @@ def create_maintenance_record_endpoint(record: MaintenanceRecordCreate, db: Sess
 # Customers Endpoints
 # ---------------------------------------------------
 
-# TODO Customer 조회 삭제
-
 # * - 고객 생성
 @app.post("/customers", response_model=CustomerResponse)
 def create_customer_endpoint(customer_data: CustomerCreate, db: Session = Depends(get_db)):
     return customers.create_customer(db, customer_data)
 
+# FIN * - 고객 조회
+@app.get("/customers", response_model=List[CustomerResponse])
+def get_customers_endpoint(customer_id: Optional[int] = Query(None), db: Session = Depends(get_db)):
+    return customers.get_customers(db, customer_id)
+
 # Customers - 본인의 개인정보 수정
 @app.patch("/customers/{customer_id}", response_model=CustomerResponse)
 def update_customer_information_endpoint(customer_id: int, customer_data: CustomerUpdateRequest, db: Session = Depends(get_db)):
     return customers.update_customer_information(db, customer_id, customer_data)
+
+# FIN * - 고객 삭제
+@app.delete("/customers/{customer_id}")
+def delete_customer_endpoint(customer_id: int, db: Session = Depends(get_db)):
+    return customers.delete_customer(db, customer_id) # return message
 
 # ---------------------------------------------------
 # Reservations Endpoints

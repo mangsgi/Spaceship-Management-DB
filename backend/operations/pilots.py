@@ -86,11 +86,6 @@ def delete_pilot(db: Session, pilot_id: int):
     if not pilot:
         raise HTTPException(status_code=401, detail="조종사를 찾을 수 없습니다.")
     try:
-        # null 제약조건을 위반하지 않기 위한 license 삭제
-        licenses = db.query(Licenses).filter(Licenses.pilot_id == pilot_id).all()
-        for license in licenses:
-            db.delete(license)
-        
         db.delete(pilot)
         db.commit()
         return {"message": f"조종사 '{pilot_id}'가 삭제되었습니다."}
