@@ -174,8 +174,8 @@ def create_maintenance_task_endpoint(task_data: MaintenanceTaskCreate, db: Sessi
     return maintenance_tasks.create_maintenance_task(db, task_data)
 
 # Fin Mechanic - 본인이 할당된 유지 보수 작업 조회
-@app.get("/maintenance_tasks/mechanic/{mechanic_id}", response_model=List[MaintenanceTaskResponse])
-def read_maintenance_tasks_for_mechanic(mechanic_id: int, db: Session = Depends(get_db)):
+@app.get("/maintenance_tasks/mechanic", response_model=List[MaintenanceTaskResponse])
+def read_maintenance_tasks_for_mechanic(mechanic_id: int = Query(...), db: Session = Depends(get_db)):
     return maintenance_tasks.get_maintenance_tasks_by_mechanic(db, mechanic_id)
 
 # Administrator - 유지 보수 일정 조회
