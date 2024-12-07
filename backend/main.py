@@ -145,6 +145,8 @@ def retrieve_available_spaceships(
 ):
     return spaceships.get_available_spaceships(db, departure_time, arrival_time)
 
+# TODO Mechnic - 수리할 우주선 조회
+
 # Administrator - 우주선 상태 업데이트
 @app.patch("/spaceships/{spaceship_id}/status", response_model=SpaceshipResponse) # "운영 중", "점검 중"
 def update_spaceship_status_endpoint(spaceship_id: int, spaceship_update_data: SpaceshipUpdateRequest, db: Session = Depends(get_db)):
@@ -251,7 +253,7 @@ def cancel_reservation_endpoint(customer_data: ReservationUpdateRequest, reserva
 # ---------------------------------------------------
 
 # Fin 정비사 조회(id가 주어지면 해당 정비사만 조회)
-@app.get("/mechanics", response_model=list[MechanicResponse])
+@app.get("/mechanics", response_model=List[MechanicResponse])
 def get_mechanics_endpoint(mechanic_id: Optional[int] = Query(None), db: Session = Depends(get_db)):
     return mechanics.get_mechanics(db, mechanic_id)
 
@@ -266,12 +268,17 @@ def create_mechanic_endpoint(mechanic_data: MechanicCreate, db: Session = Depend
 # Administrators Endpoints
 # ---------------------------------------------------
 
-# TODO 관리자 생성, 조회, 삭제, 업데이트 필요
+# TODO 관리자 삭제, 업데이트
 
 # * - 관리자 생성
 @app.post("/administrators", response_model=AdministratorResponse)
 def create_administrator_endpoint(admin_data: AdministratorCreate, db: Session = Depends(get_db)):
     return administrators.create_administrator(db, admin_data)
+
+# FIN Administator - 관리자 조회 for 접속
+@app.get("/administrators", response_model=List[AdministratorResponse])
+def get_administrators_endpoint(administartor_id: Optional[int] = Query(None), db: Session = Depends(get_db)):
+    return administrators.get_administrators(db, administartor_id)
 
 # ---------------------------------------------------
 # UserRoles Endpoints
@@ -302,4 +309,3 @@ def update_license_status_endpoint(license_id: int, new_status: LicenseUpdateReq
 @app.get("/licenses", response_model=list[LicenseResponse])
 def get_licenses_endpoint(pilot_id: Optional[int] = Query(None), db: Session = Depends(get_db)):
     return licenses.get_licenses(db, pilot_id)
-    
