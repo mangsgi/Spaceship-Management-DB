@@ -13,12 +13,6 @@
   async function handleSubmit(event) {
     event.preventDefault();
 
-    const regex = /^\d{5}$/;
-    if (!regex.test(inputText)) {
-      errorMessage = '유효한 5자리 숫자를 입력하세요.';
-      return;
-    }
-
     inputText = parseInt(inputText, 10);
 
     loading.set(true);
@@ -142,7 +136,7 @@
         <input
           type="text"
           bind:value={inputText}
-          placeholder="5자리 코드를 입력하세요"
+          placeholder="본인의 코드를 입력하세요"
           maxlength="5"
           required
         />
