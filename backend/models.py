@@ -118,7 +118,6 @@ class UserRoles(Base):  # 역할 테이블
     customer = relationship("Customers", back_populates="user_role")
     admin = relationship("Administrators", back_populates="user_role")
 
-
 class Administrators(Base): # 관리자 테이블
     __tablename__ = "administrators"
     admin_id = Column(Integer, primary_key=True, index=True)

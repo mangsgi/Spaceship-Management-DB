@@ -61,6 +61,7 @@ def get_available_spaceships(
         return []
     return [SpaceshipResponse.model_validate(spaceship) for spaceship in spaceships]
 
+# FIN Mechanic - 수리할 우주선 조회
 def get_spaceships(db: Session, spaceship_id: Optional[int] = None):
     if spaceship_id is not None:
         spaceship = db.query(Spaceships).filter(Spaceships.spaceship_id == spaceship_id).first()

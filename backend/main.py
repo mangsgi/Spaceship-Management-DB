@@ -198,10 +198,15 @@ def update_maintenance_task_endpoint(task_id: int, task_data: MaintenanceTaskUpd
 # MaintenanceRecords Endpoints
 # ---------------------------------------------------
 
-# Mechanic - 유지 보수 작업 기록하기
+# Mechanic - 유지 보수 작업 기록
 @app.post("/maintenance_records", response_model=MaintenanceRecordResponse)
 def create_maintenance_record_endpoint(record: MaintenanceRecordCreate, db: Session = Depends(get_db)):
     return maintenance_records.create_maintenance_record(db, record)
+
+# Fin Mechanic - 유지 보수 기록 조회
+@app.get("/maintenance_records", response_model=List[MaintenanceRecordResponse])
+def get_maintenance_record_endpoint(record_id: Optional[int] = Query(None), db: Session = Depends(get_db)):
+    return maintenance_records.get_maintenance_record(db, record_id)
 
 # ---------------------------------------------------
 # Customers Endpoints
