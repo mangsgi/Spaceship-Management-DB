@@ -46,7 +46,7 @@ def get_available_spaceships(
 
     # 기존 비행 일정의 시간 안에 겹치지 않는 우주선만 필터링 
     if departure_time and arrival_time:
-        query = db.query(Spaceships).filter(
+        query = query.filter(
             ~db.query(Flights)
             .filter(
                 Flights.spaceship_id == Spaceships.spaceship_id,
@@ -54,12 +54,12 @@ def get_available_spaceships(
                 Flights.arrival_time > departure_time,
             )
             .exists()
-        ).all()
-    else:
-        query = db.query(Spaceships).all()
-    if not query:
+        )
+        
+    spaceships = query.all()
+    if not spaceships:
         return []
-    return query
+    return [SpaceshipResponse.model_validate(spaceship) for spaceship in spaceships]
 
 def get_spaceships(db: Session, spaceship_id: Optional[int] = None):
     if spaceship_id is not None:

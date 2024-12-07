@@ -138,7 +138,7 @@ def create_spaceship_endpoint(spaceship_data: SpaceshipCreate, db: Session = Dep
 
 # Fin Administrator - 우주선 조회 for 비행 일정 생성과 수정 및 우주선 할당
 @app.get("/spaceships/available", response_model=List[SpaceshipResponse])
-def retrieve_available_spaceships(
+def get_available_spaceships_endpoint(
     departure_time: Optional[datetime] = Query(None), 
     arrival_time: Optional[datetime] = Query(None), 
     db: Session = Depends(get_db)
