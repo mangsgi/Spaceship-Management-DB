@@ -314,6 +314,6 @@ def update_license_status_endpoint(license_id: int, new_status: LicenseUpdateReq
     return licenses.update_license_status(db, license_id, new_status) # 허가, 갱신 중, 만료
 
 # Fin License 정보 조회 (PDF 포함)
-@app.get("/licenses", response_model=list[LicenseResponse])
+@app.get("/licenses", response_model=List[LicenseResponse])
 def get_licenses_endpoint(pilot_id: Optional[int] = Query(None), db: Session = Depends(get_db)):
     return licenses.get_licenses(db, pilot_id)

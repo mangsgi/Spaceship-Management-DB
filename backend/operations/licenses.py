@@ -6,18 +6,18 @@ import json
 import base64
 
 def convert_to_response(license):
-        # PDF 데이터를 Base64로 인코딩
-        encoded_document = base64.b64encode(license.license_document).decode("utf-8")
+    # PDF 데이터를 Base64로 인코딩
+    encoded_document = base64.b64encode(license.license_document).decode("utf-8")
 
-        # LicenseResponse 생성
-        return LicenseResponse(
-            license_id=license.license_id,
-            pilot_id=license.pilot_id,
-            license_number=license.license_number,
-            license_expiry_date=license.license_expiry_date,
-            license_status=license.license_status,
-            license_document=encoded_document,
-        )
+    # LicenseResponse 생성
+    return LicenseResponse(
+        license_id=license.license_id,
+        pilot_id=license.pilot_id,
+        license_number=license.license_number,
+        license_expiry_date=license.license_expiry_date,
+        license_status=license.license_status,
+        license_document=encoded_document,
+    )
 
 # Pilot - 파일럿의 새로운 라이선스 추가
 async def add_license(db: Session, license_data: UploadFile, license_file: UploadFile):
@@ -79,7 +79,7 @@ def update_license_status(db: Session, license_id: int, license_data: LicenseUpd
 # Fin License 정보 조회 (PDF 포함)
 def get_licenses(db: Session, pilot_id: Optional[int] = None):
     if pilot_id is not None:
-        licenses = db.query(Licenses).filter(Licenses.pilot_id == pilot_id).first()
+        licenses = db.query(Licenses).filter(Licenses.pilot_id == pilot_id).all()
         if not licenses:
             raise HTTPException(status_code=404, detail="해당 조종사를 찾을 수 없습니다.")
         return [convert_to_response(license) for license in licenses]
