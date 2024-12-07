@@ -20,7 +20,7 @@ class Pilots(Base): # 조종사 테이블
     user_role = relationship("UserRoles", back_populates="pilot")  # 역할 관계 설정
 
 
-class Flights(Base): # 비행편 테이블
+class Flights(Base): # 비행 일정 테이블
     __tablename__ = "flights"
     flight_id = Column(Integer, primary_key=True, index=True)
     spaceship_id = Column(Integer, ForeignKey("spaceships.spaceship_id", ondelete="CASCADE"), nullable=False)
@@ -38,6 +38,7 @@ class Spaceships(Base): # 우주선 테이블
     model = Column(String, nullable=False)
     manufacture_date = Column(Date, nullable=False)
     status = Column(Enum("운영 중", "점검 중", name="spaceship_status"), nullable=False)
+    last_maintenance_date = Column(Date, nullable=True)  # 마지막 유지보수 날짜 추가
 
     flights = relationship("Flights", back_populates="spaceship")
     maintenance_tasks = relationship("MaintenanceTasks", back_populates="spaceship")
@@ -196,19 +197,22 @@ class SpaceshipCreate(BaseModel):
     model: str
     manufacture_date: date
     status: str
+    last_maintenance_date: date
 
 class SpaceshipResponse(BaseModel):
     spaceship_id: int
     model: str
     manufacture_date: date
     status: str
-
+    last_maintenance_date: date
+    
     class Config:
         from_attributes = True
 
 class SpaceshipUpdateRequest(BaseModel): # 우주선 상태 수정용 테이블
-    status: str
-
+    status: Optional[str] = None
+    last_maintenance_date: Optional[date] = None
+    
 # PilotFlights
 class PilotFlightCreate(BaseModel):
     flight_id: int

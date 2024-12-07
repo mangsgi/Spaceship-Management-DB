@@ -26,17 +26,24 @@ def update_spaceship_status(db: Session, spaceship_id: int, spaceship_update_dat
     if spaceship_update_data.status not in ['운영 중', '점검 중']:
         raise HTTPException(status_code=401, detail=f"Invalid status: {spaceship_update_data.status}. Must be one of {['운영 중', '점검 중']}")
     
-    spaceship.status = spaceship_update_data.status
+    if spaceship_update_data.status is not None:
+        spaceship.status = spaceship_update_data.status
+    if spaceship_update_data.last_maintenance_date is not None:
+        spaceship.last_maintenance_date = spaceship_update_data.last_maintenance_date
+    
     db.commit()
     db.refresh(spaceship)
     return SpaceshipResponse.model_validate(spaceship)
 
-# Fin Administrator - 우주선 조회 in order to 비행 일정 생성과 수정 및 우주선 할당
+# Fin Administrator - 우주선 조회 for 비행 일정 생성과 수정 및 우주선 할당
 def get_available_spaceships(
     db: Session, 
     departure_time: Optional[datetime] = None,
     arrival_time: Optional[datetime] = None,
 ) -> List[Spaceships]:
+    # 운영 중인 우주선만 포함
+    query = db.query(Spaceships).filter(Spaceships.status == "운영 중")
+
     # 기존 비행 일정의 시간 안에 겹치지 않는 우주선만 필터링 
     if departure_time and arrival_time:
         query = db.query(Spaceships).filter(
@@ -53,3 +60,13 @@ def get_available_spaceships(
     if not query:
         return []
     return query
+
+def get_spaceships(db: Session, spaceship_id: Optional[int] = None):
+    if spaceship_id is not None:
+        spaceship = db.query(Spaceships).filter(Spaceships.spaceship_id == spaceship_id).first()
+        if not spaceship:
+            raise HTTPException(status_code=404, detail="해당 우주선을 찾을 수 없습니다.")
+        return [SpaceshipResponse.model_validate(spaceship)]  # 단일 우주선을 리스트로 반환
+    else:
+        spaceships = db.query(Spaceships).all()
+        return [SpaceshipResponse.model_validate(spaceship) for spaceship in spaceships]

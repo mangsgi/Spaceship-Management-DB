@@ -136,7 +136,7 @@ def get_unassigned_flights_endpoint(db: Session = Depends(get_db)):
 def create_spaceship_endpoint(spaceship_data: SpaceshipCreate, db: Session = Depends(get_db)):
     return spaceships.create_spaceship(db, spaceship_data)
 
-# Fin Administrator - 우주선 조회 in order to 비행 일정 생성과 수정 및 우주선 할당
+# Fin Administrator - 우주선 조회 for 비행 일정 생성과 수정 및 우주선 할당
 @app.get("/spaceships/available", response_model=List[SpaceshipResponse])
 def retrieve_available_spaceships(
     departure_time: Optional[datetime] = Query(None), 
@@ -145,10 +145,13 @@ def retrieve_available_spaceships(
 ):
     return spaceships.get_available_spaceships(db, departure_time, arrival_time)
 
-# TODO Mechnic - 수리할 우주선 조회
+# FIN Mechanic - 수리할 우주선 조회
+@app.get("/spaceships", response_model=List(SpaceshipResponse))
+def get_spaceships_endpoint(spaceship_id: Optional[int] = Query(None), db: Session = Depends(get_db)):
+    return spaceships.get_spaceships(db, spaceship_id)
 
 # Administrator - 우주선 상태 업데이트
-@app.patch("/spaceships/{spaceship_id}/status", response_model=SpaceshipResponse) # "운영 중", "점검 중"
+@app.patch("/spaceships/{spaceship_id}/status", response_model=SpaceshipResponse) # "운영 중", "점검 중" & 마지막 유지보수 일자
 def update_spaceship_status_endpoint(spaceship_id: int, spaceship_update_data: SpaceshipUpdateRequest, db: Session = Depends(get_db)):
     return spaceships.update_spaceship_status(db, spaceship_id, spaceship_update_data) 
 
