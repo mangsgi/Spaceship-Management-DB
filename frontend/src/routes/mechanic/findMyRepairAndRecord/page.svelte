@@ -20,7 +20,7 @@
       const response = await axios.get(endpoint_get, { params: { mechanic_id: mechanicId } });
 
       // 임시 조건 (실제 응답 검증으로 대체)
-      if (response.data && response.data.pilot_id === pilotId) {
+      if (response.data && response.data.mechanic_id === mechanicId) {
         // 역할에 따른 URL로 네비게이션
         data_get = response.data;
         
