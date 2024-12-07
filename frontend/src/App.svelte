@@ -1,81 +1,50 @@
 <!-- src/App.svelte -->
 <script>
-    import { onMount } from 'svelte';
-    import axios from 'axios';
-
-    let items = [];
-    let title = '';
-    let description = '';
-
-    const fetchItems = async () => {
-        try {
-            const response = await axios.get('http://127.0.0.1:8000/items/1'); // 예시로 ID 1번 아이템 가져오기
-            items = [response.data];
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    const createItem = async () => {
-        try {
-            const response = await axios.post('http://127.0.0.1:8000/items/', {
-                title,
-                description
-            });
-            items = [...items, response.data];
-            title = '';
-            description = '';
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    onMount(() => {
-        fetchItems();
-    });
+  import { Router, Route, navigate } from 'svelte-routing';
+  import Home from './routes/Home.svelte';
+  import Login from './routes/Login.svelte';
+  import Pilot from './routes/pilot/page.svelte';
+  import FindPilotFlight from './routes/pilot/findPilotFlight/page.svelte';
+  import UpdatePilotInfo from './routes/pilot/updatePilotInfo/page.svelte';
+  import UpdateLicense from './routes/pilot/updateLicense/page.svelte';
+  import Mechanic from './routes/mechanic/page.svelte';
+  import Customer from './routes/customer/page.svelte';
+  import Admin from './routes/admin/page.svelte';
 </script>
 
-<main>
-    <h1>FastAPI & Svelte 프로젝트</h1>
-
-    <h2>아이템 추가</h2>
-    <input bind:value={title} placeholder="제목" />
-    <input bind:value={description} placeholder="설명" />
-    <button on:click={createItem}>추가</button>
-
-    <h2>아이템 목록</h2>
-    <ul>
-        {#each items as item}
-            <li>{item.title}: {item.description}</li>
-        {/each}
-    </ul>
-</main>
+<Router>
+  <Route path="/" component={Home} />
+  <Route path="/login" component={Login} />
+  <Route path="/pilot" component={Pilot} />
+  <Route path="/pilot/findPilotFlight" component={FindPilotFlight} />
+  <Route path="/pilot/updatePilotInfo" component={UpdatePilotInfo} />
+  <Route path="/pilot/updateLicense" component={UpdateLicense} />
+  <Route path="/mechanic" component={Mechanic} />
+  <Route path="/customer" component={Customer} />
+  <Route path="/admin" component={Admin} />
+  <!-- 추가적인 라우트 설정 -->
+</Router>
 
 <style>
-    main {
-        padding: 1em;
-        max-width: 600px;
-        margin: 0 auto;
-    }
-
-    input {
-        display: block;
-        margin-bottom: 0.5em;
-        padding: 0.5em;
-        width: 100%;
-    }
-
-    button {
-        padding: 0.5em 1em;
-    }
-
-    ul {
-        list-style: none;
-        padding: 0;
-    }
-
-    li {
-        padding: 0.5em 0;
-        border-bottom: 1px solid #ccc;
-    }
+  .page {
+    text-align: center;
+    padding: 50px;
+  }
+  button {
+    margin: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1em;
+  }
+  input {
+    margin: 5px;
+    padding: 5px;
+    font-size: 1em;
+  }
+  .error {
+    color: red;
+  }
+  .loading {
+    font-style: italic;
+  }
 </style>

@@ -1,8 +1,8 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 
-# KEY
-.secrets.toml
+# DATABASE KEY 
+secrets.toml
 
 # Virtual environments
 venv/
