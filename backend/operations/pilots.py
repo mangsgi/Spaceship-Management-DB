@@ -16,7 +16,7 @@ def create_pilot(db: Session, pilot_data: PilotCreate):
     return PilotResponse.model_validate(new_pilot)
 
 # FIN Pilot - 조회 for 접속
-def get_pilot(db: Session, pilot_id: int) -> PilotResponse:
+def get_pilot(db: Session, pilot_id: int) -> List[PilotResponse]:
     pilot = db.query(Pilots).filter(Pilots.pilot_id == pilot_id).first()
     if not pilot:
         raise HTTPException(status_code=400, detail="Pilot을 찾을 수 없습니다.")

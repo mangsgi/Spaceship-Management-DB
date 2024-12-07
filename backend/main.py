@@ -64,7 +64,7 @@ def create_pilot_endpoint(pilot_data: PilotCreate, db: Session = Depends(get_db)
     return pilots.create_pilot(db, pilot_data)
 
 # FIN Pilot - 조회 for 조종사 접속
-@app.get("/pilots", response_model=PilotResponse)
+@app.get("/pilots", response_model=List[PilotResponse])
 def get_pilot_endpoint(pilot_id: int = Query(...), db: Session = Depends(get_db)):
     return pilots.get_pilot(db, pilot_id) 
 
