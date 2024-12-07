@@ -35,17 +35,17 @@
 
   <div>
     <h3>골라 들어가기</h3>
-    <Link to="/admin/?">
-      <button>비행 일정 생성</button>
+    <Link to="/admin/addFlightAndRecords">
+      <button>비행, 유지보수일정,생성</button>
     </Link>
-    <Link to="/admin/?">
-      <button>조종사 우주선 할당</button>
+    <Link to="/admin/flightsToPilot">
+      <button>조종사 비행 할당</button>
     </Link>
-    <Link to="/admin/?">
-      <button>우주선 상태 변경</button>
+    <Link to="/admin/addSpaceshipChangeStatus">
+      <button>우주선 생성 및 상태 변경 </button> <!-- 최근 유지보수 일 생성으로 인한 아직은 미구현-->
     </Link>
-    <Link to="/admin/?">
-      <button>라이센스 상태 변경</button>
+    <Link to="/admin/changeLicenseStatus">
+      <button>라이센스 상태 변경(조회 수정)</button>
     </Link>
   </div>
 </div>

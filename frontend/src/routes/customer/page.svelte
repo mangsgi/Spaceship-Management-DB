@@ -29,19 +29,19 @@
 
 <div class="customer-page">
   <h2>정비사 페이지</h2>
-  <p>정비사 ID: {mechanicId}</p>
+  <p>정비사 ID: {customerId}</p>
   <button on:click={navigateHome}>홈으로 돌아가기</button>
   <!-- 정비사 관련 내용 추가 -->
 
   <div>
     <h3>골라 들어가기</h3>
-    <Link to="/customer/?">
+    <Link to="/customer/findFlightsAndAddReservation">
       <button>본인 예약 생성 & 비행일정 조회</button>
     </Link>
-    <Link to="/customer/?">
-      <button>예약 변경 및 취소</button>
+    <Link to="/customer/findMyReservationAndCancel">
+      <button>예약 조회 및 취소</button>
     </Link>
-    <Link to="/customer/?">
+    <Link to="/customer/updateCustomInfo">
       <button>본인 정보 수정</button>
     </Link>
   </div>

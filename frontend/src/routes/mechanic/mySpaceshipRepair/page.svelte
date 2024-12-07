@@ -12,7 +12,7 @@
 
     let data = [];
 
-    async function findMyRepair() {
+    async function findMyFlight() {
 
     loading.set(true);
     
@@ -20,7 +20,7 @@
     let endpoint = 'http://localhost:8000/flights_by_pilot';
 
     try {
-      const response = await axios.get(endpoint, { params: { pilot_id: pilotId } });
+      const response = await axios.get(endpoint, { params: { mechanicId: mechanicId } });
 
       // 임시 조건 (실제 응답 검증으로 대체)
       if (response.data && Array.isArray(response.data)) {

@@ -39,7 +39,7 @@
         idKey = 'customer_id'; // customer_id로 키 이름 설정
         break;
       case 'admin':
-        endpoint = 'http://localhost:8000/admins';
+        endpoint = 'http://localhost:8000/administrators';
         params['admin_id'] = inputText; // admin_id로 키 이름 설정
         idKey = 'admin_id'; // admin_id로 키 이름 설정
         break;
