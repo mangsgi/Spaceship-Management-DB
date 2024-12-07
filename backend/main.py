@@ -17,7 +17,7 @@ from models import (
     MechanicCreate, MechanicResponse, 
     AdministratorCreate, AdministratorResponse, 
     UserRoleCreate, UserRoleResponse,
-    LicenseResponse, LicenseCreateRequest,
+    LicenseResponse, LicenseCreateRequest, LicenseUpdateRequest
 )
 
 app = FastAPI() # API 엔드포인트와 설정을 이 객체에 연결
@@ -60,7 +60,7 @@ def read_root():
 
 # TODO 삭제
 
-# * - Pliot 생성 (면허는 따로 생성하는 방향으로)
+# * - 조종사 생성 (면허는 따로 생성하는 방향으로)
 @app.post("/pilots", response_model=PilotResponse)
 def create_pilot_endpoint(pilot_data: PilotCreate, db: Session = Depends(get_db)):
     return pilots.create_pilot(db, pilot_data)
@@ -83,6 +83,11 @@ def get_available_pilots_endpoint(
 @app.patch("/pilots/{pilot_id}")
 def update_pilot_information_endpoint(pilot_id: int, pilot_data: PilotUpdateRequest, db: Session = Depends(get_db)):
     return pilots.update_pilot_information(db, pilot_id, pilot_data)
+
+# Fin * - 조종사 삭제
+@app.delete("/pilots/{pilot_id}")
+def delete_pilot_endpoint(pilot_id: int, db: Session = Depends(get_db)):
+    return pilots.delete_pilot(db, pilot_id) # return message
 
 # ---------------------------------------------------
 # Flights Endpoints
@@ -268,6 +273,11 @@ def create_administrator_endpoint(admin_data: AdministratorCreate, db: Session =
 
 # Fin * - Pilots Customers Administrators Mechanics 연결해서 회원 만들어질 때마다 추가
 
+# 모든 User 조회(id가 주어지면 해당 user만 조회)
+@app.get("/user_roles", response_model=list[UserRoleResponse])
+def get_users_endpoint(user_role_id: Optional[int] = Query(None), db: Session = Depends(get_db)):
+    return user_roles.get_users(db, user_role_id)
+
 # ---------------------------------------------------
 # Licenses Endpoints
 # ---------------------------------------------------
@@ -282,4 +292,8 @@ async def add_license_endpoint(license_data: UploadFile = File(...), license_fil
 def update_license_status_endpoint(license_id: int, new_status: LicenseUpdateRequest, db: Session = Depends(get_db)):
     return licenses.update_license_status(db, license_id, new_status) # 허가, 갱신 중, 만료
 
-# TODO License 정보 조회 (PDF 포함)
+# Fin License 정보 조회 (PDF 포함)
+@app.get("/licenses", response_model=list[LicenseResponse])
+def get_licenses_endpoint(pilot_id: Optional[int] = Query(None), db: Session = Depends(get_db)):
+    return licenses.get_licenses(db, pilot_id)
+    

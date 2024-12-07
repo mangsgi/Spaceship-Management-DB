@@ -23,7 +23,7 @@ class Pilots(Base): # 조종사 테이블
 class Flights(Base): # 비행편 테이블
     __tablename__ = "flights"
     flight_id = Column(Integer, primary_key=True, index=True)
-    spaceship_id = Column(Integer, ForeignKey("spaceships.spaceship_id"), nullable=False)
+    spaceship_id = Column(Integer, ForeignKey("spaceships.spaceship_id", ondelete="CASCADE"), nullable=False)
     departure_location = Column(String, nullable=False)
     arrival_location = Column(String, nullable=False)
     departure_time = Column(DateTime, nullable=False)
@@ -45,13 +45,13 @@ class Spaceships(Base): # 우주선 테이블
 class PilotFlights(Base): # 조종사 비행 일정 테이블
     __tablename__ = "pilot_flights"
     pilot_flight_id = Column(Integer, primary_key=True, index=True)
-    flight_id = Column(Integer, ForeignKey("flights.flight_id"), nullable=False)
-    pilot_id = Column(Integer, ForeignKey("pilots.pilot_id"), nullable=False)
+    flight_id = Column(Integer, ForeignKey("flights.flight_id", ondelete="CASCADE"), nullable=False)
+    pilot_id = Column(Integer, ForeignKey("pilots.pilot_id", ondelete="CASCADE"), nullable=False)
 
 class MaintenanceTasks(Base):  # 우주선 유지보수 테이블
     __tablename__ = "maintenance_tasks"
     task_id = Column(Integer, primary_key=True, index=True)
-    spaceship_id = Column(Integer, ForeignKey("spaceships.spaceship_id"), nullable=False)
+    spaceship_id = Column(Integer, ForeignKey("spaceships.spaceship_id", ondelete="CASCADE"), nullable=False)
     task_type = Column(Enum("정기 점검", "수리", name="task_type"), nullable=False)
     priority = Column(Integer, nullable=False)
     deadline = Column(Date, nullable=False)
@@ -64,8 +64,8 @@ class MaintenanceTasks(Base):  # 우주선 유지보수 테이블
 class MaintenanceTaskAssignments(Base): # 정비사와 유지보수 작업의 다대다 관계를 위한 중간 테이블
     __tablename__ = "maintenance_task_assignments"
     assignment_id = Column(Integer, primary_key=True, index=True)
-    task_id = Column(Integer, ForeignKey("maintenance_tasks.task_id"), nullable=False)
-    mechanic_id = Column(Integer, ForeignKey("mechanics.mechanic_id"), nullable=False)
+    task_id = Column(Integer, ForeignKey("maintenance_tasks.task_id", ondelete="CASCADE"), nullable=False)
+    mechanic_id = Column(Integer, ForeignKey("mechanics.mechanic_id", ondelete="CASCADE"), nullable=False)
 
 class Mechanics(Base):  # 정비사 테이블
     __tablename__ = "mechanics"
@@ -79,7 +79,7 @@ class Mechanics(Base):  # 정비사 테이블
 class MaintenanceRecords(Base): # 유지보수 기록 테이블
     __tablename__ = "maintenance_records"
     record_id = Column(Integer, primary_key=True, index=True)
-    task_id = Column(Integer, ForeignKey("maintenance_tasks.task_id"), nullable=False)
+    task_id = Column(Integer, ForeignKey("maintenance_tasks.task_id", ondelete="CASCADE"), nullable=False)
     details = Column(String)
     parts_used = Column(String)
     time_spent = Column(Float)
@@ -97,8 +97,8 @@ class Customers(Base): # 승객 테이블
 class Reservations(Base): # 예약 테이블
     __tablename__ = "reservations"
     reservation_id = Column(Integer, primary_key=True, index=True)
-    customer_id = Column(Integer, ForeignKey("customers.customer_id"), nullable=False)
-    flight_id = Column(Integer, ForeignKey("flights.flight_id"), nullable=False)
+    customer_id = Column(Integer, ForeignKey("customers.customer_id", ondelete="CASCADE"), nullable=False)
+    flight_id = Column(Integer, ForeignKey("flights.flight_id", ondelete="CASCADE"), nullable=False)
     seat_number = Column(String, nullable=False)
     status = Column(Enum("예약", "취소", name="reservation_status"), nullable=False)
     reservation_date = Column(DateTime, nullable=False)
@@ -106,10 +106,10 @@ class Reservations(Base): # 예약 테이블
 class UserRoles(Base):  # 역할 테이블
     __tablename__ = "user_roles"
     user_role_id = Column(Integer, primary_key=True, index=True)
-    pilot_id = Column(Integer, ForeignKey("pilots.pilot_id"), nullable=True)
-    mechanic_id = Column(Integer, ForeignKey("mechanics.mechanic_id"), nullable=True)
-    customer_id = Column(Integer, ForeignKey("customers.customer_id"), nullable=True)
-    admin_id = Column(Integer, ForeignKey("administrators.admin_id"), nullable=True)
+    pilot_id = Column(Integer, ForeignKey("pilots.pilot_id", ondelete="CASCADE"), nullable=True)
+    mechanic_id = Column(Integer, ForeignKey("mechanics.mechanic_id", ondelete="CASCADE"), nullable=True)
+    customer_id = Column(Integer, ForeignKey("customers.customer_id", ondelete="CASCADE"), nullable=True)
+    admin_id = Column(Integer, ForeignKey("administrators.admin_id", ondelete="CASCADE"), nullable=True)
     role = Column(Enum("관리자", "조종사", "정비사", "고객", name="user_role"), nullable=False)
 
     pilot = relationship("Pilots", back_populates="user_role")
@@ -130,7 +130,7 @@ class Administrators(Base): # 관리자 테이블
 class Licenses(Base):  # 라이선스 테이블
     __tablename__ = "licenses"
     license_id = Column(Integer, primary_key=True, index=True)  # Primary Key가 필수여서..
-    pilot_id = Column(Integer, ForeignKey("pilots.pilot_id"), nullable=False)
+    pilot_id = Column(Integer, ForeignKey("pilots.pilot_id", ondelete="CASCADE"), nullable=False)
     license_status = Column(Enum("허가", "갱신 중", "만료", name="license_status"), nullable=False)
     license_number = Column(String, nullable=False)
     license_expiry_date = Column(Date, nullable=False)
@@ -366,9 +366,10 @@ class LicenseResponse(BaseModel):  # 응답 데이터
     license_number: str
     license_expiry_date: date
     license_status: str
-
+    license_document: str
+    
     class Config:
         from_attributes = True
         
 class LicenseUpdateRequest(BaseModel): # 라이선스 상태 수정용 테이블
-    new_status: str
+    license_status: str

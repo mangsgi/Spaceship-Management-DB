@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Optional, List
 from . import user_roles
 
-# * - 파일럿 생성
+# * - 조종사 생성
 def create_pilot(db: Session, pilot_data: PilotCreate):
     new_pilot = Pilots(**pilot_data.model_dump())
     db.add(new_pilot)
@@ -22,13 +22,13 @@ def get_pilot(db: Session, pilot_id: int) -> PilotResponse:
         raise HTTPException(status_code=400, detail="Pilot을 찾을 수 없습니다.")
     return PilotResponse.model_validate(pilot)
 
-# Administrator - 라이선스가 있는 모든 파일럿 조회 -> 비행 일정 생성 및 파일럿 할당
+# Administrator - 라이선스가 있는 모든 조종사 조회 -> 비행 일정 생성 및 조종사 할당
 def get_available_pilots(
     db: Session, 
     departure_time: Optional[datetime] = None, 
     departure_location: Optional[str] = None
 ) -> List[Pilots]:
-    # 라이선스가 있는 파일럿 조회
+    # 라이선스가 있는 조종사 조회
     pilots = (
         db.query(Pilots)
         .join(Licenses, Pilots.pilot_id == Licenses.pilot_id)
@@ -41,7 +41,7 @@ def get_available_pilots(
 
     available_pilots = []
     for pilot in pilots:
-        # 파일럿의 마지막 비행 위치와 시간 확인
+        # 조종사의 마지막 비행 위치와 시간 확인
         last_flight = ( 
             db.query(Flights)
             .join(PilotFlights, Flights.flight_id == PilotFlights.flight_id)
@@ -50,7 +50,7 @@ def get_available_pilots(
             .first()
         )
 
-        # 주어진 출발 시간이나 출발 위치가 없거나 파일럿의 마지막 비행 내용이 없으면 추가
+        # 주어진 출발 시간이나 출발 위치가 없거나 조종사의 마지막 비행 내용이 없으면 추가
         if (not departure_time and not departure_location) or not last_flight:
             available_pilots.append(pilot)
             continue
@@ -79,3 +79,21 @@ def update_pilot_information(db: Session, pilot_id: int, pilot_data: PilotUpdate
     db.commit()
     db.refresh(pilot)
     return PilotResponse.model_validate(pilot)
+
+# Fin * - 조종사 삭제
+def delete_pilot(db: Session, pilot_id: int):
+    pilot = db.query(Pilots).filter(Pilots.pilot_id == pilot_id).first()
+    if not pilot:
+        raise HTTPException(status_code=401, detail="조종사를 찾을 수 없습니다.")
+    try:
+        # null 제약조건을 위반하지 않기 위한 license 삭제
+        licenses = db.query(Licenses).filter(Licenses.pilot_id == pilot_id).all()
+        for license in licenses:
+            db.delete(license)
+        
+        db.delete(pilot)
+        db.commit()
+        return {"message": f"조종사 '{pilot_id}'가 삭제되었습니다."}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"조종사 삭제 중 오류 발생: {str(e)}")
