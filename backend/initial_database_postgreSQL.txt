@@ -102,6 +102,19 @@ INSERT INTO maintenance_tasks (spaceship_id, task_type, priority, deadline, stat
 # (9, '수리', 6, '2029-10-10', '대기 중'),
 # (10, '정기 점검', 7, '2030-02-15', '대기 중');
 
+# 정비사 유지보수 일정
+INSERT INTO maintenance_task_assignments (task_id, mechanic_id) VALUES
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5),
+(6, 6),
+(7, 7),
+# (8, 8),
+# (9, 9),
+# (10, 10);
+
 # 유지보수 기록 
 INSERT INTO maintenance_records (task_id, details, parts_used, time_spent) VALUES
 (1, '엔진 오일 교체 및 점검', '엔진 오일, 필터, 렌치 세트', 2.0),

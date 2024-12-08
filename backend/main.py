@@ -116,7 +116,7 @@ def read_pilot_flights_endpoint(pilot_id: int = Query(...), is_current: bool = Q
 def get_flights_endpoint(
     departure_location: Optional[str] = Query(None),
     arrival_location: Optional[str] = Query(None),
-    departure_date: Optional[date] = Query(None), # 날짜와 시간에서 날짜만 선택 가능
+    departure_date: Optional[str] = Query(None), # 날짜와 시간에서 날짜만 선택 가능
     sort_by: Optional[str] = Query("departure_time"), # 기본값 : 출발 시간 기준 정렬 {departure_date, arrival_time 등 ..}
     db: Session = Depends(get_db)
 ):

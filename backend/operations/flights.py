@@ -3,7 +3,7 @@ from models import Flights, FlightCreate, FlightResponse, FlightUpdateRequest, P
 from fastapi import HTTPException
 from typing import Optional, List
 from sqlalchemy import Date, not_
-from datetime import datetime
+from datetime import datetime, date
 
 # Administrator - 비행 일정 생성
 def create_flight(db: Session, flight: FlightCreate) -> FlightResponse:
@@ -98,6 +98,7 @@ def get_flights(
     if arrival_location:
         query = query.filter(Flights.arrival_location == arrival_location)
     if departure_date:
+        departure_date = date.fromisoformat(departure_date)
         query = query.filter(Flights.departure_time.cast(Date) == departure_date)
 
     # 정렬 조건
