@@ -154,7 +154,7 @@
   <form on:submit|preventDefault={findCustomFlight}>
     <input type="text" bind:value={departure_location} placeholder="Departure Location" />
     <input type="text" bind:value={arrival_location} placeholder="Arrival Location" />
-    <input type="date" bind:value={departure_date} placeholder="Departure Date" />
+    <input type="text" bind:value={departure_date} placeholder="Departure Date" />
     <select bind:value={sort_by}>
       <option value="">Select Sorting</option>
       <option value="departure_time">Departure Time</option>
