@@ -72,9 +72,9 @@ INSERT INTO flights (spaceship_id, departure_location, arrival_location, departu
 (5, 'Jupiter', 'Pluto', '2023-01-01T06:00:00', '2028-01-02T02:00:00', '진행 중'),
 (6, 'Mars', 'Earth', '2028-03-01T14:00:00', '2028-03-01T18:00:00', '예정'),
 (7, 'Neptune', 'Saturn', '2027-02-01T02:00:00', '2027-02-01T14:00:00', '예정'),
-(8, 'Pluto', 'Mercury', '2029-04-01T22:00:00', '2029-04-02T10:00:00', '예정'),
-(9, 'Earth', 'Venus', '2020-06-01T16:00:00', '2029-06-01T20:00:00', '진행 중'),
-(10, 'Mars', 'Jupiter', '2029-08-01T05:00:00', '2029-08-01T11:00:00', '예정');
+# (8, 'Pluto', 'Mercury', '2029-04-01T22:00:00', '2029-04-02T10:00:00', '예정'),
+# (9, 'Earth', 'Venus', '2020-06-01T16:00:00', '2029-06-01T20:00:00', '진행 중'),
+# (10, 'Mars', 'Jupiter', '2029-08-01T05:00:00', '2029-08-01T11:00:00', '예정');
 
 # 조종사 비행 일정
 INSERT INTO pilot_flights (flight_id, pilot_id) VALUES
@@ -85,9 +85,9 @@ INSERT INTO pilot_flights (flight_id, pilot_id) VALUES
 (5, 5),
 (6, 6),
 (7, 7),
-(8, 8),
-(9, 9),
-(10, 10);
+# (8, 8),
+# (9, 9),
+# (10, 10);
 
 # 유지보수 일정
 INSERT INTO maintenance_tasks (spaceship_id, task_type, priority, deadline, status) VALUES
@@ -98,9 +98,9 @@ INSERT INTO maintenance_tasks (spaceship_id, task_type, priority, deadline, stat
 (5, '정기 점검', 2, '2026-06-20', '대기 중'),
 (6, '정기 점검', 3, '2025-12-15', '진행 중'),
 (7, '수리', 4, '2028-05-25', '진행 중'),
-(8, '정기 점검', 5, '2029-08-30', '대기 중'),
-(9, '수리', 6, '2029-10-10', '대기 중'),
-(10, '정기 점검', 7, '2030-02-15', '대기 중');
+# (8, '정기 점검', 5, '2029-08-30', '대기 중'),
+# (9, '수리', 6, '2029-10-10', '대기 중'),
+# (10, '정기 점검', 7, '2030-02-15', '대기 중');
 
 # 유지보수 기록 
 INSERT INTO maintenance_records (task_id, details, parts_used, time_spent) VALUES
@@ -111,9 +111,9 @@ INSERT INTO maintenance_records (task_id, details, parts_used, time_spent) VALUE
 (5, '외부 패널 점검 및 교체', '패널, 드릴, 접착제', 3.0),
 (6, '전자 시스템 오류 수정', '회로 기판, 납땜 도구, 전압계', 4.0),
 (7, '좌석 안전 벨트 수리', '벨트, 스패너 세트', 1.5),
-(8, '통신 장비 교체', '안테나, 회로 기판, 케이블', 3.5),
-(9, '내부 조명 시스템 교체', 'LED 조명, 연결선', 2.0),
-(10, '내부 공기 조절 시스템 점검', '필터, 공기 순환 장치', 3.2);
+# (8, '통신 장비 교체', '안테나, 회로 기판, 케이블', 3.5),
+# (9, '내부 조명 시스템 교체', 'LED 조명, 연결선', 2.0),
+# (10, '내부 공기 조절 시스템 점검', '필터, 공기 순환 장치', 3.2);
 
 # 예약
 INSERT INTO reservations (customer_id, flight_id, seat_number, status, reservation_date) VALUES
