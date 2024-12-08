@@ -10,36 +10,111 @@
 </script>
 
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+
   .mechanic-page {
-    text-align: center;
-    padding: 50px;
+  position: absolute; /* 또는 fixed */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+  text-align: center;
+  padding: 0; /* 패딩 제거 */
+  background-image: url('/images/space_main.png'); /* 원하는 배경 이미지 경로 */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat; /* 배경 이미지 반복 방지 */
+  background-attachment: fixed; /* 배경 이미지 고정 */
+  color: white;
+  width: 100vw; /* 전체 뷰포트 너비의 120% */
+  height: 120vh; /* 전체 뷰포트 높이의 120% */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-family: 'Orbitron', sans-serif;
+  overflow: hidden; /* 필요에 따라 추가 */
+}
+
+  .mechanic-container {
+    background-color: rgba(0, 0, 0, 0.6); /* 반투명 배경 */
+    padding: 40px;
+    border-radius: 20px;
+    width: 300px;
   }
-  .mechanic-page button {
-    margin: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
+
+  h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5em;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+  }
+
+  p {
+    font-family: 'Orbitron', sans-serif;
     font-size: 1em;
+    margin-bottom: 20px;
   }
-  button {
-    margin-top: 20px;
+
+  button, .button-link {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1em;
+    margin: 10px 0;
     padding: 10px 20px;
+    border-radius: 50px;
+    border: 2px solid white;
+    background-color: transparent;
+    color: white;
+    transition: background-color 0.3s, color 0.3s;
+    width: 100%;
     cursor: pointer;
+    text-decoration: none; /* Link 스타일 초기화 */
+    display: inline-block;
+    text-align: center;
+  }
+
+  button:hover, .button-link:hover {
+    background-color: white;
+    color: black;
+  }
+
+  .links-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .links-container button {
+    width: 100%;
+    margin: 5px 0;
   }
 </style>
 
 <div class="mechanic-page">
-  <h2>정비사 페이지</h2>
-  <p>정비사 ID: {mechanicId}</p>
-  <button on:click={navigateHome}>홈으로 돌아가기</button>
-  <!-- 정비사 관련 내용 추가 -->
+  <div class="mechanic-container">
+    <h1>Mechanic Page</h1>
+    <p>Mechanic ID: {mechanicId}</p>
+    <button on:click={navigateHome}>Main Page</button>
 
-  <div>
-    <h3>골라 들어가기</h3>
-    <Link to="/mechanic/findMyRepairAndRecord">
-      <button>본인 수리 조회 및 유지보수 기록 작성</button>
-    </Link>
-    <Link to="/mechanic/mySpaceshipRepair">
-      <button>수리할 우주선 상태 조회</button>
-    </Link>
+    <h3>Select Your Action</h3>
+    <div class="links-container">
+      <Link to="/mechanic/findMyRepairAndRecord">
+        <button>Find My Task & Records</button>
+      </Link>
+      <Link to="/mechanic/mySpaceshipRepair">
+        <button>Search SpaceShip for Repair</button>
+      </Link>
+    </div>
   </div>
 </div>

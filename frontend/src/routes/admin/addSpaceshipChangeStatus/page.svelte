@@ -111,7 +111,7 @@
   });
 </script>
 
-<style>
+<!-- <style>
   .mechanic-page, .admin-page {
     text-align: center;
     padding: 50px;
@@ -192,30 +192,195 @@
       width: 90%;
     }
   }
+</style> -->
+
+
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+
+  .admin-page {
+  position: absolute; /* 또는 fixed */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+  text-align: center;
+  padding: 0; /* 패딩 제거 */
+  background-image: url('/images/space_main.png'); /* 원하는 배경 이미지 경로 */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat; /* 배경 이미지 반복 방지 */
+  background-attachment: fixed; /* 배경 이미지 고정 */
+  color: white;
+  width: 100vw; /* 전체 뷰포트 너비의 120% */
+  height: 120vh; /* 전체 뷰포트 높이의 120% */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-family: 'Orbitron', sans-serif;
+  overflow: hidden; /* 필요에 따라 추가 */
+}
+
+.admin-container {
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 40px;
+    border-radius: 20px;
+    width: 80%;
+    max-width: 800px;
+    max-height: 80vh; /* 컨테이너 최대 높이 지정 */
+    overflow: auto;   /* 컨테이너 내부 내용이 많을 경우 스크롤 발생 */
+}
+
+  h1,
+  h2,
+  h3 {
+    font-family: "Orbitron", sans-serif;
+  }
+
+  h1 {
+    font-size: 3em;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  label {
+    width: 100%;
+    margin: 10px 0;
+    text-align: left;
+    font-size: 1em;
+  }
+
+  input[type="text"],
+  input[type="date"],
+  input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 2px solid white;
+    border-radius: 10px;
+    background-color: transparent;
+    color: white;
+    font-family: "Orbitron", sans-serif;
+    font-size: 1em;
+  }
+
+  input::placeholder {
+    color: #ccc;
+  }
+
+  button {
+    font-family: "Orbitron", sans-serif;
+    font-size: 1em;
+    margin: 10px 0;
+    padding: 10px 20px;
+    border-radius: 50px;
+    border: 2px solid white;
+    background-color: transparent;
+    color: white;
+    transition:
+      background-color 0.3s,
+      color 0.3s;
+    width: 100%;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: white;
+    color: black;
+  }
+
+  table {
+    margin: 20px auto;
+    border-collapse: collapse;
+    width: 100%;
+    color: white;
+  }
+
+  th,
+  td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+  }
+
+  th {
+    background: #333;
+  }
+
+  tbody {
+    background-color: rgba(0, 0, 0, 0.5); /* White with 80% opacity */
+  }
+
+  .loading {
+    font-style: italic;
+    margin-top: 10px;
+  }
+
+  .error {
+    color: #ffcccc;
+    font-size: 1em;
+    margin-top: 10px;
+  }
+
+  .home-button {
+    width: auto;
+    margin: 10px 0;
+  }
+
+  .records-section {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin-top: 40px;
+}
+
+.records-section > div {
+  width: 45%;
+  min-width: 300px;
+}
 </style>
 
-<div class="mechanic-page">
-  <h1>우주선 생성 및 관리</h1>
-  <p>관리자 ID: {adminId}</p>
-  <button on:click={navigateHome}>홈으로 돌아가기</button>
+
+
+<div class="admin-page">
+<div class="admin-container">
+  <h1>Add Spaceship & Change Status</h1>
+  <p>Admin ID: {adminId}</p>
+  <button on:click={() => navigate("/admin")}>Back to Menu </button>
 
   {#if $loading}
-    <p class="loading">로딩 중...</p>
+    <p class="loading">Loading...</p>
   {/if}
 
-  <div class="records-section">
+  <div class="record-section">
     <!-- Available Spaceships List -->
     <div>
       {#if available_spaceships.length > 0}
-        <h3>사용 가능한 우주선 목록</h3>
+        <h3>Available Spaceship List</h3>
         <table>
           <thead>
             <tr>
-              <th>우주선 ID</th>
-              <th>모델</th>
-              <th>제조일</th>
-              <th>상태</th>
-              <th>최종 유지보수일</th>
+              <th>Spaceship ID</th>
+              <th>Model Name</th>
+              <th>Manufacture Date</th>
+              <th>Status</th>
+              <th>Last Maintenance Date</th>
             </tr>
           </thead>
           <tbody>
@@ -231,39 +396,41 @@
           </tbody>
         </table>
       {:else if !errorMessage_get && !$loading}
-        <p>사용 가능한 우주선이 없습니다.</p>
+        <p>There is no available spaceship.</p>
       {/if}
 
       {#if errorMessage_get}
         <p class="error">{errorMessage_get}</p>
       {/if}
     </div>
-  </div>
+  
+</div>
 
   <!-- 우주선 생성 폼 -->
   <div>
-    <h2>우주선 생성</h2>
+    <h2>Add Spaceship</h2>
     {#if errorMessage}
       <p class="error">{errorMessage}</p>
     {/if}
     <form on:submit={createSpaceship}>
-      <label for="model">모델:</label>
-      <input type="text" id="model" bind:value={model} placeholder="모델명" required />
+      <label for="model">Model Name:</label>
+      <input type="text" id="model" bind:value={model} placeholder="Model Name" required />
 
-      <label for="manufacture_date">제조일:</label>
+      <label for="manufacture_date">Manufacture Date:</label>
       <input type="date" id="manufacture_date" bind:value={manufacture_date} required />
 
-      <label for="spaceship_status">상태:</label>
+      <label for="spaceship_status">Status:</label>
       <select id="spaceship_status" bind:value={spaceship_status} required>
-        <option value="" disabled selected>상태 선택</option>
+        <option value="" disabled selected>Choose Status</option>
         <option value="운영 중">운영 중</option>
         <option value="정비 중">점검 중</option>
       </select>
 
-      <label for="last_maintenance_date">최종 유지보수일:</label>
+      <label for="last_maintenance_date">Last Maintenance Date:</label>
       <input type="date" id="last_maintenance_date" bind:value={last_maintenance_date} required />
 
-      <button type="submit">우주선 생성</button>
+      <button type="submit">Add</button>
     </form>
+  </div>
   </div>
 </div>

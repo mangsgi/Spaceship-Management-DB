@@ -172,7 +172,7 @@
   });
 </script>
 
-<style>
+<!-- <style>
   .mechanic-page, .admin-page {
     text-align: center;
     padding: 50px;
@@ -253,15 +253,180 @@
       width: 90%;
     }
   }
+</style> -->
+
+
+
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+
+  .admin-page {
+  position: absolute; /* 또는 fixed */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+  text-align: center;
+  padding: 0; /* 패딩 제거 */
+  background-image: url('/images/space_main.png'); /* 원하는 배경 이미지 경로 */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat; /* 배경 이미지 반복 방지 */
+  background-attachment: fixed; /* 배경 이미지 고정 */
+  color: white;
+  width: 100vw; /* 전체 뷰포트 너비의 120% */
+  height: 120vh; /* 전체 뷰포트 높이의 120% */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-family: 'Orbitron', sans-serif;
+  overflow: hidden; /* 필요에 따라 추가 */
+}
+
+.admin-container {
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 40px;
+    border-radius: 20px;
+    width: 85%;
+    max-width: 1500px;
+    max-height: 80vh; /* 컨테이너 최대 높이 지정 */
+    overflow: auto;   /* 컨테이너 내부 내용이 많을 경우 스크롤 발생 */
+}
+
+  h1,
+  h2,
+  h3 {
+    font-family: "Orbitron", sans-serif;
+  }
+
+  h1 {
+    font-size: 3em;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  label {
+    width: 100%;
+    margin: 10px 0;
+    text-align: left;
+    font-size: 1em;
+  }
+
+  input[type="text"],
+  input[type="date"],
+  input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 2px solid white;
+    border-radius: 10px;
+    background-color: transparent;
+    color: white;
+    font-family: "Orbitron", sans-serif;
+    font-size: 1em;
+  }
+
+  input::placeholder {
+    color: #ccc;
+  }
+
+  button {
+    font-family: "Orbitron", sans-serif;
+    font-size: 1em;
+    margin: 10px 0;
+    padding: 10px 20px;
+    border-radius: 50px;
+    border: 2px solid white;
+    background-color: transparent;
+    color: white;
+    transition:
+      background-color 0.3s,
+      color 0.3s;
+    width: 100%;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: white;
+    color: black;
+  }
+
+  table {
+    margin: 20px auto;
+    border-collapse: collapse;
+    width: 100%;
+    color: white;
+  }
+
+  th,
+  td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+  }
+
+  th {
+    background: #333;
+  }
+
+  tbody {
+    background-color: rgba(0, 0, 0, 0.5); /* White with 80% opacity */
+  }
+
+  .loading {
+    font-style: italic;
+    margin-top: 10px;
+  }
+
+  .error {
+    color: #ffcccc;
+    font-size: 1em;
+    margin-top: 10px;
+  }
+
+  .home-button {
+    width: auto;
+    margin: 10px 0;
+  }
+
+  .records-section {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin-top: 40px;
+}
+
+.records-section > div {
+  width: 45%;
+  min-width: 300px;
+}
 </style>
 
-<div class="mechanic-page">
-  <h1>비행과 유지보수일정 생성</h1>
-  <p>관리자 ID: {adminId}</p>
-  <button on:click={navigateHome}>홈으로 돌아가기</button>
+
+<div class="admin-page">
+<div class="admin-container">
+  <h1>Add Flights & Tasks</h1>
+  <p>Admin ID: {adminId}</p>
+  <button on:click={() => navigate("/admin")}>Back to Menu </button>
 
   {#if $loading}
-    <p class="loading">로딩 중...</p>
+    <p class="loading">Loading...</p>
   {/if}
 
   {#if errorMessage_get}
@@ -270,7 +435,7 @@
 
   <!-- Available Spaceships -->
   {#if available_spaceships.length > 0}
-    <h2>비행 가능한 우주선 목록</h2>
+    <h2>Flightable Spaceship List</h2>
     <table>
       <thead>
         <tr>
@@ -294,13 +459,13 @@
       </tbody>
     </table>
   {:else if !errorMessage_get && !$loading}
-    <p>비행 가능한 우주선이 없습니다.</p>
+    <p>There is no available spaceship.</p>
   {/if}
 
   <div class="records-section">
     <!-- Flight Creation -->
     <div>
-      <h2>Flight 생성</h2>
+      <h2>Add Flight</h2>
       {#if errorMessage}
         <p class="error">{errorMessage}</p>
       {/if}
@@ -323,22 +488,22 @@
         <label for="flight_status">Flight Status:</label>
         <input type="text" id="flight_status" bind:value={flight_status} placeholder="Flight Status" required />
 
-        <button type="submit">비행 생성</button>
+        <button type="submit">Add</button>
       </form>
     </div>
 
     <!-- Unassigned Flights List -->
     <div>
-      <h2>할당되지 않은 비행 목록</h2>
+      <h2>No Assignment Flight</h2>
       {#if errorMessage_records}
         <p class="error">{errorMessage_records}</p>
       {/if}
       <form on:submit|preventDefault={findFlightsNoPilot}>
-        <button type="submit">비행 조회</button>
+        <button type="submit">Search Flights</button>
       </form>
 
       {#if no_assign_flights.length > 0}
-        <h3>할당되지 않은 비행 목록</h3>
+        <h3>No Assignment Flight List</h3>
         <table>
           <thead>
             <tr>
@@ -366,8 +531,9 @@
           </tbody>
         </table>
       {:else if !errorMessage_records && !$loading}
-        <p>할당되지 않은 비행이 없습니다.</p>
+        <p>There is no non-assignment flight!</p>
       {/if}
     </div>
   </div>
+</div>
 </div>

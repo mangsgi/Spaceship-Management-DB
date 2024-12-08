@@ -1,9 +1,12 @@
+<!-- src/routes/pilot/updateLicense.svelte -->
 <script>
-  import { userId } from '../../../stores.js';
-  import axios from 'axios';
-  import { writable } from 'svelte/store';
+  import { userId } from '../../../stores.js'; // stores.js의 경로에 따라 조정
   import { onMount } from 'svelte';
+  import { navigate } from 'svelte-routing';
+  import { writable } from 'svelte/store';
+  import axios from 'axios';
 
+  let pilotId;
   $: pilotId = $userId;
 
   let license_number = '';
@@ -16,13 +19,14 @@
 
   async function viewLicense() {
     loading.set(true);
-    let endpoint_get = 'http://localhost:8000/licenses'; // 다수 라이센스 반환 API 엔드포인트 (예: 배열 반환)
+    errorMessage_get = '';
+
+    const endpoint_get = 'http://localhost:8000/licenses'; // 다수 라이센스 반환 API 엔드포인트
 
     try {
       const response = await axios.get(endpoint_get, { params: { pilot_id: pilotId } });
 
       if (Array.isArray(response.data)) {
-        // 배열 형태로 반환받는다고 가정
         if (response.data.length > 0) {
           data_get = response.data;
         } else {
@@ -59,7 +63,7 @@
     if (file) {
       formData.append("license_file", file);
     } else {
-      alert("파일을 선택하세요!");
+      alert("Choose your file!");
       return;
     }
 
@@ -71,6 +75,7 @@
       });
       console.log("응답:", response.data);
       alert("업로드 성공!");
+      viewLicense(); // 업로드 후 라이센스 정보 갱신
     } catch (error) {
       console.error("업로드 실패:", error.response?.data || error.message);
       alert("업로드에 실패했습니다.");
@@ -98,106 +103,213 @@
   }
 
   onMount(() => {
+    console.log('라이센스 업데이트 컴포넌트가 마운트되었습니다.');
     viewLicense();
   });
 </script>
 
 <style>
-  .page {
-    text-align: center;
-    padding: 50px;
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+  .pilot-page {
+  position: absolute; /* 또는 fixed */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+  text-align: center;
+  padding: 0; /* 패딩 제거 */
+  background-image: url('/images/space_main.png'); /* 원하는 배경 이미지 경로 */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat; /* 배경 이미지 반복 방지 */
+  background-attachment: fixed; /* 배경 이미지 고정 */
+  color: white;
+  width: 100vw; /* 전체 뷰포트 너비의 120% */
+  height: 120vh; /* 전체 뷰포트 높이의 120% */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-family: 'Orbitron', sans-serif;
+  overflow: hidden; /* 필요에 따라 추가 */
+}
+
+  .pilot-container {
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 40px;
+    border-radius: 20px;
+    width: 80%;
+    max-width: 800px;
+    max-height: 80vh; /* 컨테이너 최대 높이 지정 */
+    overflow: auto;   /* 컨테이너 내부 내용이 많을 경우 스크롤 발생 */
+}
+
+  h1, h2, h3 {
+    font-family: 'Orbitron', sans-serif;
   }
+
+  h1 {
+    font-size: 3em;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  label {
+    width: 100%;
+    margin: 10px 0;
+    text-align: left;
+    font-size: 1em;
+  }
+
+  input[type="text"],
+  input[type="date"],
+  input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 2px solid white;
+    border-radius: 10px;
+    background-color: transparent;
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1em;
+  }
+
+  input::placeholder {
+    color: #ccc;
+  }
+
   button {
-    margin: 5px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1em;
+    margin: 10px 0;
     padding: 10px 20px;
+    border-radius: 50px;
+    border: 2px solid white;
+    background-color: transparent;
+    color: white;
+    transition: background-color 0.3s, color 0.3s;
+    width: 100%;
     cursor: pointer;
-    font-size: 1em;
   }
-  input {
-    margin: 5px;
-    padding: 5px;
-    font-size: 1em;
+
+  button:hover {
+    background-color: white;
+    color: black;
   }
-  .error {
-    color: red;
-  }
-  .loading {
-    font-style: italic;
-  }
+
   table {
     margin: 20px auto;
     border-collapse: collapse;
-    width: 80%;
+    width: 100%;
+    color: white;
   }
+
   th, td {
     border: 1px solid #ccc;
     padding: 10px;
-    text-align:left;
+    text-align: left;
   }
+
   th {
-    background: #f4f4f4;
+    background: #333;
+  }
+
+  tbody {
+    background-color: rgba(0, 0, 0, 0.5); /* White with 80% opacity */
+}
+
+  .loading {
+    font-style: italic;
+    margin-top: 10px;
+  }
+
+  .error {
+    color: #ffcccc;
+    font-size: 1em;
+    margin-top: 10px;
+  }
+
+  .home-button {
+    width: auto;
+    margin: 10px 0;
   }
 </style>
 
-<div class="page">
-  <h2>라이센스 업데이트</h2>
-  <p>파일럿 ID: {pilotId}</p>
+<div class="pilot-page">
+  <div class="pilot-container">
+    <h1>Renew License</h1>
+    <p>Pilot ID: {pilotId}</p>
+    <button on:click={() => navigate('/pilot')}>Back to Menu
+    </button>
 
-  <h3>라이선스 업로드</h3>
-  <form on:submit|preventDefault={uploadLicense}>
-    <label>
-      라이선스 번호:
-      <input type="text" bind:value={license_number} />
-    </label>
-    <br />
-    <label>
-      라이선스 만료일:
-      <input type="date" bind:value={license_expiry_date} />
-    </label>
-    <br />
-    <label>
-      PDF 파일 업로드:
-      <input type="file" accept="application/pdf" on:change={handleFileChange} />
-    </label>
-    <br />
-    <button type="submit">업로드</button>
-  </form>
+    <h2>Upload License</h2>
+    <form on:submit|preventDefault={uploadLicense}>
+      <label>
+        License Number:
+        <input type="text" bind:value={license_number} placeholder="License Number" required />
+      </label>
+      <label>
+        License Expiry Date:
+        <input type="date" bind:value={license_expiry_date} required />
+      </label>
+      <label>
+        Upload PDF:
+        <input type="file" accept="application/pdf" on:change={handleFileChange} required />
+      </label>
+      <button type="submit">Upload</button>
+    </form>
 
-  <h3>파일럿 라이센스 정보</h3>
-  {#if $loading}
-    <p class="loading">로딩 중...</p>
-  {/if}
+    <h2>Pilot's License Info</h2>
+    {#if $loading}
+      <p class="loading">Loading...</p>
+    {/if}
 
-  {#if errorMessage_get}
-    <p class="error">{errorMessage_get}</p>
-  {/if}
+    {#if errorMessage_get}
+      <p class="error">{errorMessage_get}</p>
+    {/if}
 
-  {#if data_get && data_get.length > 0 && !errorMessage_get}
-    <table>
-      <thead>
-        <tr>
-          <th>license_id</th>
-          <th>pilot_id</th>
-          <th>license_number</th>
-          <th>license_expiry_date</th>
-          <th>license_status</th>
-          <!-- <th>license_document(Base64)</th> -->
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each data_get as license}
+    {#if data_get.length > 0 && !errorMessage_get}
+      <table>
+        <thead>
           <tr>
-            <td>{license.license_id}</td>
-            <td>{license.pilot_id}</td>
-            <td>{license.license_number}</td>
-            <td>{license.license_expiry_date}</td>
-            <td>{license.license_status}</td>
-            <!-- <td style="max-width:200px; word-break:break-all;">{license.license_document}</td> -->
-            <td><button on:click={() => openPDF(license.license_document)}>PDF 보기</button></td>
+            <th>License ID</th>
+            <th>Pilot ID</th>
+            <th>License Number</th>
+            <th>Expiry Date</th>
+            <th>Status</th>
+            <th>Action</th>
           </tr>
-        {/each}
-      </tbody>
-    </table>
-  {/if}
+        </thead>
+        <tbody>
+          {#each data_get as license}
+            <tr>
+              <td>{license.license_id}</td>
+              <td>{license.pilot_id}</td>
+              <td>{license.license_number}</td>
+              <td>{license.license_expiry_date}</td>
+              <td>{license.license_status}</td>
+              <td><button on:click={() => openPDF(license.license_document)}>View PDF</button></td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    {/if}
+  </div>
 </div>

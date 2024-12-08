@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
+  import { navigate } from "svelte-routing"; // Ensure this is appropriate for your setup
   import { userId } from '../../../stores.js'; // stores.js의 경로에 따라 조정
   import axios from 'axios';
 
@@ -105,48 +106,175 @@
   });
 </script>
 
+
 <style>
-  .page {
-    text-align: center;
-    padding: 50px;
+  @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+
+  .admin-page {
+  position: absolute; /* 또는 fixed */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+  text-align: center;
+  padding: 0; /* 패딩 제거 */
+  background-image: url('/images/space_main.png'); /* 원하는 배경 이미지 경로 */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat; /* 배경 이미지 반복 방지 */
+  background-attachment: fixed; /* 배경 이미지 고정 */
+  color: white;
+  width: 100vw; /* 전체 뷰포트 너비의 120% */
+  height: 120vh; /* 전체 뷰포트 높이의 120% */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-family: 'Orbitron', sans-serif;
+  overflow: hidden; /* 필요에 따라 추가 */
+}
+
+.admin-container {
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 40px;
+    border-radius: 20px;
+    width: 80%;
+    max-width: 800px;
+    max-height: 80vh; /* 컨테이너 최대 높이 지정 */
+    overflow: auto;   /* 컨테이너 내부 내용이 많을 경우 스크롤 발생 */
+}
+
+  h1,
+  h2,
+  h3 {
+    font-family: "Orbitron", sans-serif;
   }
+
+  h1 {
+    font-size: 3em;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  label {
+    width: 100%;
+    margin: 10px 0;
+    text-align: left;
+    font-size: 1em;
+  }
+
+  input[type="text"],
+  input[type="date"],
+  input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 2px solid white;
+    border-radius: 10px;
+    background-color: transparent;
+    color: white;
+    font-family: "Orbitron", sans-serif;
+    font-size: 1em;
+  }
+
+  input::placeholder {
+    color: #ccc;
+  }
+
   button {
-    margin: 5px;
+    font-family: "Orbitron", sans-serif;
+    font-size: 1em;
+    margin: 10px 0;
     padding: 10px 20px;
+    border-radius: 50px;
+    border: 2px solid white;
+    background-color: transparent;
+    color: white;
+    transition:
+      background-color 0.3s,
+      color 0.3s;
+    width: 100%;
     cursor: pointer;
-    font-size: 1em;
   }
-  input, select {
-    margin: 5px;
-    padding: 5px;
-    font-size: 1em;
+
+  button:hover {
+    background-color: white;
+    color: black;
   }
-  .error {
-    color: red;
-  }
-  .loading {
-    font-style: italic;
-  }
+
   table {
     margin: 20px auto;
     border-collapse: collapse;
-    width: 80%;
+    width: 100%;
+    color: white;
   }
-  th, td {
+
+  th,
+  td {
     border: 1px solid #ccc;
     padding: 10px;
     text-align: left;
   }
+
   th {
-    background: #f4f4f4;
+    background: #333;
   }
+
+  tbody {
+    background-color: rgba(0, 0, 0, 0.5); /* White with 80% opacity */
+  }
+
+  .loading {
+    font-style: italic;
+    margin-top: 10px;
+  }
+
+  .error {
+    color: #ffcccc;
+    font-size: 1em;
+    margin-top: 10px;
+  }
+
+  .home-button {
+    width: auto;
+    margin: 10px 0;
+  }
+
+  .records-section {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin-top: 40px;
+}
+
+.records-section > div {
+  width: 45%;
+  min-width: 300px;
+}
 </style>
 
-<div class="page">
-  <h2>라이센스 허가</h2>
-  <p>관리자 ID: {adminId}</p>
+<div class="admin-page">
+  <div class="admin-container">
+  <h2>Access License</h2>
+  <p>Admin ID: {adminId}</p>
+  <button on:click={() => navigate("/admin")}>Back to Menu </button>
 
-  <h3>라이선스 상태 업데이트</h3>
+  <h3>Update License Status</h3>
   {#if errorMessage_upload}
     <p class="error">{errorMessage_upload}</p>
   {/if}
@@ -171,8 +299,8 @@
           <td>{license.license_expiry_date}</td>
           <td>{license.license_status}</td>
           <td>
-            <button on:click={() => openPDF(license.license_document)}>PDF 보기</button>
-            <button on:click={() => updateLicenseStatus(license)}>상태 업데이트</button>
+            <button on:click={() => openPDF(license.license_document)}>View PDF</button>
+            <button on:click={() => updateLicenseStatus(license)}>Update Status</button>
           </td>
         </tr>
       {/each}
@@ -180,7 +308,7 @@
   </table>
   
   {#if $loading}
-    <p class="loading">로딩 중...</p>
+    <p class="loading">Loading...</p>
   {/if}
 
   {#if errorMessage_get}
@@ -188,6 +316,7 @@
   {/if}
 
   {#if data_get.length === 0 && !errorMessage_get && !$loading}
-    <p>라이센스 정보가 없습니다.</p>
+    <p>There is no license.</p>
   {/if}
+</div>
 </div>
