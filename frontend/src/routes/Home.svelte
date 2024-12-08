@@ -48,12 +48,16 @@
 
   h1 {
     font-family: 'Tinos', sans-serif; /* 커스텀 글꼴 적용 */
-    font-size: 4em; /* 필요에 따라 크기 조절 */
+    font-size: 5em; /* 필요에 따라 크기 조절 */
     margin-bottom: 20px;
+  }
+
+  .title {
+    letter-spacing: 12px; /* 원하는 간격 설정 (2px은 예시) */
   }
 </style>
 
 <div class="home">
-  <h1>S   P   A   C   E</h1>
+  <h1 class="title">Cosmic Odyssey</h1>
   <button on:click={() => navigate('/login')}>explore</button>
 </div>

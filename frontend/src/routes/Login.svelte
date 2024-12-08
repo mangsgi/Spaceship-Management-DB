@@ -121,12 +121,15 @@
 }
 
 
-  .login-container {
-    background-color: rgba(0, 0, 0, 0.6); /* 반투명 배경 */
+.login-container {
+    background-color: rgba(53, 53, 53, 0.4);
     padding: 40px;
     border-radius: 20px;
-    width: 300px;
-  }
+    width: 80%;
+    max-width: 800px;
+    max-height: 80vh; /* 컨테이너 최대 높이 지정 */
+    overflow: auto;   /* 컨테이너 내부 내용이 많을 경우 스크롤 발생 */
+}
 
   h1{
     font-family: 'Orbitron', sans-serif;
@@ -190,6 +193,7 @@
 </style>
 
 <div class="login-page">
+  <div class="login-container">
   
     <h2>User Login</h2>
     <button on:click={goHome} class="home-button">Main Page</button>
@@ -226,4 +230,5 @@
         <p class="loading">로딩 중...</p>
       {/if}
     {/if}
+  </div>
 </div>
