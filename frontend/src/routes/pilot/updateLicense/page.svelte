@@ -55,6 +55,7 @@
     const formData = new FormData();
 
     const licenseData = {
+      pilot_id : pilotId,
       license_number,
       license_expiry_date,
     };
@@ -68,11 +69,7 @@
     }
 
     try {
-      const response = await axios.post(`/pilots/${pilotId}/licenses`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.post(`http://localhost:8000/pilots/${pilotId}/licenses`, formData  );
       console.log("응답:", response.data);
       alert("업로드 성공!");
       viewLicense(); // 업로드 후 라이센스 정보 갱신
