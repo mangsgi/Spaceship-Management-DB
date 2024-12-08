@@ -16,12 +16,12 @@ def create_maintenance_record(db: Session, record: MaintenanceRecordCreate) -> M
     return MaintenanceRecordResponse.model_validate(db_record)
 
 # Fin Mechanic - 유지 보수 기록 조회
-def get_maintenance_record(db: Session, record_id: Optional[int] = None):
-    if record_id is not None:
-        maintenance_record = db.query(MaintenanceRecords).filter(MaintenanceRecords.record_id == record_id).first()
-        if not maintenance_record:
-            raise HTTPException(status_code=404, detail="해당 유지 보수 기록을 찾을 수 없습니다.")
-        return [MaintenanceRecordResponse.model_validate(maintenance_record)]
+def get_maintenance_record(db: Session, task_id: Optional[int] = None):
+    if task_id is not None:
+        maintenance_records = db.query(MaintenanceRecords).filter(MaintenanceRecords.task_id == task_id).all()
+        if not maintenance_records:
+            raise HTTPException(status_code=404, detail=f"Task ID {task_id}와 관련된 유지 보수 기록을 찾을 수 없습니다.")
+        return [MaintenanceRecordResponse.model_validate(record) for record in maintenance_records]
     else:
         maintenance_records = db.query(MaintenanceRecords).all()
-        return [MaintenanceRecordResponse.model_validate(maintenance_record) for maintenance_record in maintenance_records]
+        return [MaintenanceRecordResponse.model_validate(record) for record in maintenance_records]

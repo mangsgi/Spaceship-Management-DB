@@ -205,8 +205,8 @@ def create_maintenance_record_endpoint(record: MaintenanceRecordCreate, db: Sess
 
 # Fin Mechanic - 유지 보수 기록 조회
 @app.get("/maintenance_records", response_model=List[MaintenanceRecordResponse])
-def get_maintenance_record_endpoint(record_id: Optional[int] = Query(None), db: Session = Depends(get_db)):
-    return maintenance_records.get_maintenance_record(db, record_id)
+def get_maintenance_record_endpoint(task_id: Optional[int] = Query(None), db: Session = Depends(get_db)):
+    return maintenance_records.get_maintenance_record(db, task_id)
 
 # ---------------------------------------------------
 # Customers Endpoints

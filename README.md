@@ -3,7 +3,7 @@
 
 ```shell
 # if you want to execute backend
-uvicorn main:app --port 8080
+uvicorn main:app --port 8000
 
 # if you want to execute frontend
 npm run dev
