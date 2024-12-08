@@ -1,4 +1,4 @@
-# 정비사
+# 조종사
 INSERT INTO pilots (name, contact_info, emergency_contact) VALUES
 ('one_pilot', '010-1111-1111', '070-1111-1111'),
 ('two_pilot', '010-2222-2222', '070-2222-2222'),
@@ -50,23 +50,10 @@ INSERT INTO administrators (name, contact_info, role) VALUES
 ('nine_admin', '010-9999-9999', '비상 연락 담당자'),
 ('ten_admin', '010-0000-0000', '운영 관리자');
 
-# 비행 일정
-INSERT INTO flights (spaceship_id, departure_location, arrival_location, departure_time, arrival_time, status) VALUES
-(1, 'Mercury', 'Vinus', '2025-11-24T10:00:00', '2026-11-24T12:00:00', '예정'),
-(2, 'Earth', 'Mars', '2026-11-24T10:00:00', '2027-11-24T12:00:00', '예정'),
-(3, 'Earth', 'Vinus', '2026-12-24T01:00:00', '2027-09-24T12:00:00', '완료'),
-(4, 'Saturn', 'Neptune', '2027-01-01T08:00:00', '2027-01-01T20:00:00', '예정'),
-(5, 'Jupiter', 'Pluto', '2028-01-01T06:00:00', '2028-01-02T02:00:00', '진행 중'),
-(6, 'Mars', 'Earth', '2028-03-01T14:00:00', '2028-03-01T18:00:00', '완료'),
-(7, 'Neptune', 'Saturn', '2027-02-01T02:00:00', '2027-02-01T14:00:00', '예정'),
-(8, 'Pluto', 'Mercury', '2029-04-01T22:00:00', '2029-04-02T10:00:00', '예정'),
-(9, 'Earth', 'Venus', '2029-06-01T16:00:00', '2029-06-01T20:00:00', '완료'),
-(10, 'Mars', 'Jupiter', '2029-08-01T05:00:00', '2029-08-01T11:00:00', '예정');
-
 # 우주선
 INSERT INTO spaceships (model, manufacture_date, status, last_maintenance_date) VALUES
 ('SpaceX Falcon 9 Block 5 Rocket', '2024-11-30', '운영 중', '2024-11-30'),
-('Dragon 2', '2020-09-31', '운영 중', '2020-11-30'),
+('Dragon 2', '2020-09-30', '운영 중', '2020-11-30'),
 ('Starship', '2019-01-10', '운영 중', '2022-11-30'),
 ('Orion Capsule', '2022-11-30', '운영 중', '2023-06-30'),
 ('Apollo 11', '2021-05-15', '점검 중', '2024-03-01'),
@@ -75,6 +62,19 @@ INSERT INTO spaceships (model, manufacture_date, status, last_maintenance_date) 
 ('Soyuz', '2018-11-12', '점검 중', '2023-05-30'),
 ('Blue Origin', '2019-10-20', '운영 중', '2023-10-15'),
 ('Dream Chaser', '2017-09-25', '운영 중', '2024-01-10');
+
+# 비행 일정
+INSERT INTO flights (spaceship_id, departure_location, arrival_location, departure_time, arrival_time, status) VALUES
+(1, 'Mercury', 'Vinus', '2025-11-24T10:00:00', '2026-11-24T12:00:00', '예정'),
+(2, 'Earth', 'Mars', '2026-11-24T10:00:00', '2027-11-24T12:00:00', '예정'),
+(3, 'Earth', 'Vinus', '2021-12-24T01:00:00', '2024-09-24T12:00:00', '완료'),
+(4, 'Saturn', 'Neptune', '2027-01-01T08:00:00', '2027-01-01T20:00:00', '예정'),
+(5, 'Jupiter', 'Pluto', '2023-01-01T06:00:00', '2028-01-02T02:00:00', '진행 중'),
+(6, 'Mars', 'Earth', '2028-03-01T14:00:00', '2028-03-01T18:00:00', '예정'),
+(7, 'Neptune', 'Saturn', '2027-02-01T02:00:00', '2027-02-01T14:00:00', '예정'),
+(8, 'Pluto', 'Mercury', '2029-04-01T22:00:00', '2029-04-02T10:00:00', '예정'),
+(9, 'Earth', 'Venus', '2020-06-01T16:00:00', '2029-06-01T20:00:00', '진행 중'),
+(10, 'Mars', 'Jupiter', '2029-08-01T05:00:00', '2029-08-01T11:00:00', '예정');
 
 # 조종사 비행 일정
 INSERT INTO pilot_flights (flight_id, pilot_id) VALUES
@@ -116,14 +116,16 @@ INSERT INTO maintenance_records (task_id, details, parts_used, time_spent) VALUE
 (10, '내부 공기 조절 시스템 점검', '필터, 공기 순환 장치', 3.2);
 
 # 예약
-INSERT INTO reservations (customer_id, flight_id, seat_number) VALUES
-(1, 7, 'A08'),
-(2, 7, 'B19'),
-(3, 7, 'C18'),
-(4, 8, 'A10'),
-(5, 9, 'B15'),
-(6, 10, 'C12'),
-(7, 4, 'D01'),
-(8, 5, 'A02'),
-(9, 6, 'B03'),
-(10, 7, 'C05');
+INSERT INTO reservations (customer_id, flight_id, seat_number, status, reservation_date) VALUES
+(1, 7, 'A08', '예약', '2024-11-23 23:08:00'),
+(2, 7, 'B19', '예약', '2024-11-19 06:35:00'),
+(3, 7, 'C18', '예약', '2024-12-01 01:07:00'),
+(4, 8, 'A10', '예약', '2024-11-16 04:42:00'),
+(5, 9, 'B15', '예약', '2024-11-10 04:44:00'),
+(6, 10, 'C12', '예약', '2024-11-27 12:53:00'),
+(7, 4, 'D01', '예약', '2024-11-17 03:35:00'),
+(8, 5, 'A02', '예약', '2024-11-10 13:05:00'),
+(9, 6, 'B03', '예약', '2024-11-07 15:01:00'),
+(10, 7, 'C05', '예약', '2024-11-10 05:45:00');
+
+

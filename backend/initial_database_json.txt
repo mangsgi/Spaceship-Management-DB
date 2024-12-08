@@ -50,6 +50,48 @@
     "emergency_contact": "070-0000-0000"
 }
 
+# 정비사
+{
+    "name": "one_mechanic",
+    "contact_info": "010-1111-1111"
+}
+{
+    "name": "two_mechanic",
+    "contact_info": "010-2222-2222"
+}
+{
+    "name": "three_mechanic",
+    "contact_info": "010-3333-3333"
+}
+{
+    "name": "four_mechanic",
+    "contact_info": "010-4444-4444"
+}
+{
+    "name": "five_mechanic",
+    "contact_info": "010-5555-5555"
+}
+{
+    "name": "six_mechanic",
+    "contact_info": "010-6666-6666"
+}
+{
+    "name": "seven_mechanic",
+    "contact_info": "010-7777-7777"
+}
+{
+    "name": "eight_mechanic",
+    "contact_info": "010-8888-8888"
+}
+{
+    "name": "nine_mechanic",
+    "contact_info": "010-9999-9999"
+}
+{
+    "name": "ten_mechanic",
+    "contact_info": "010-0000-0000"
+}
+
 # 고객
 {
     "name": "one_customer",
@@ -89,48 +131,6 @@
 }
 {
     "name": "ten_customer",
-    "contact_info": "010-0000-0000"
-}
-
-# 정비사
-{
-    "name": "one_mechanic",
-    "contact_info": "010-1111-1111"
-}
-{
-    "name": "two_mechanic",
-    "contact_info": "010-2222-2222"
-}    
-{
-    "name": "three_mechanic",
-    "contact_info": "010-3333-3333"
-}        
-{
-    "name": "four_mechanic",
-    "contact_info": "010-4444-4444"
-}
-{
-    "name": "five_mechanic",
-    "contact_info": "010-5555-5555"
-}
-{
-    "name": "six_mechanic",
-    "contact_info": "010-6666-6666"
-}
-{
-    "name": "seven_mechanic",
-    "contact_info": "010-7777-7777"
-}
-{
-    "name": "eight_mechanic",
-    "contact_info": "010-8888-8888"
-}
-{
-    "name": "nine_mechanic",
-    "contact_info": "010-9999-9999"
-}
-{
-    "name": "ten_mechanic",
     "contact_info": "010-0000-0000"
 }
 
@@ -268,69 +268,7 @@
     "status": "예정"
 }
 
-# 우주선
-{
-    "model": "SpaceX Falcon 9 Block 5 Rocket",
-    "manufacture_date": "2024-11-30",
-    "status": "운영 중",
-    "last_maintenance_date": "2024-11-30"
-}
-{
-    "model": "Dragon 2",
-    "manufacture_date": "2020-09-31",
-    "status": "운영 중",
-    "last_maintenance_date": "2020-11-30"
-}
-{
-    "model": "Starship",
-    "manufacture_date": "2019-01-10",
-    "status": "운영 중",
-    "last_maintenance_date": "2022-11-30"
-}
-{
-    "model": "Orion Capsule",
-    "manufacture_date": "2022-11-30",
-    "status": "운영 중",
-    "last_maintenance_date": "2023-06-30"
-}
-{
-    "model": "Apollo 11",
-    "manufacture_date": "2021-05-15",
-    "status": "점검 중",
-    "last_maintenance_date": "2024-03-01"
-}
-{
-    "model": "Enterprise",
-    "manufacture_date": "2020-08-10",
-    "status": "운영 중",
-    "last_maintenance_date": "2023-12-30"
-}
-{
-    "model": "Vostok 1",
-    "manufacture_date": "2020-02-01",
-    "status": "운영 중",
-    "last_maintenance_date": "2024-02-28"
-}
-{
-    "model": "Soyuz",
-    "manufacture_date": "2018-11-12",
-    "status": "점검 중",
-    "last_maintenance_date": "2023-05-30"
-}
-{
-    "model": "Blue Origin",
-    "manufacture_date": "2019-10-20",
-    "status": "운영 중",
-    "last_maintenance_date": "2023-10-15"
-}
-{
-    "model": "Dream Chaser",
-    "manufacture_date": "2017-09-25",
-    "status": "운영 중",
-    "last_maintenance_date": "2024-01-10"
-}
-
-# 조종사 비행일정
+# 조종사 비행 일정
 {
     "flight_id": 1,
     "pilot_id": 1
@@ -449,7 +387,7 @@
     "task_type": "정기 점검",
     "priority": 4,
     "deadline": "2025-11-24",
-    "status": "완료",    
+    "status": "완료",
     "assigned_mechanics": [1, 2, 3]
 }
 {
@@ -586,10 +524,4 @@
     "customer_id": 10,
     "flight_id": 7,
     "seat_number": "C05"
-}
-
-# 라이선스
-{
-    라이선스 파일.json
-    라이선스.pdf
 }
