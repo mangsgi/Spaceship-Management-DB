@@ -206,8 +206,8 @@
           <th>비행 ID</th>
           <th>출발지</th>
           <th>도착지</th>
-          <th>출발 날짜</th>
-          <th>도착 날짜</th>
+          <th>출발 시간</th>
+          <th>도착 시간</th>
           <th>선택</th>
         </tr>
       </thead>
@@ -217,8 +217,8 @@
             <td>{flight.flight_id}</td>
             <td>{flight.departure_location}</td>
             <td>{flight.arrival_location}</td>
-            <td>{new Date(flight.departure_date).toLocaleString()}</td>
-            <td>{new Date(flight.arrival_date).toLocaleString()}</td>
+            <td>{new Date(flight.departure_time).toLocaleString()}</td>
+            <td>{new Date(flight.arrival_time).toLocaleString()}</td>
             <td>
               <input type="radio" name="selectedFlight" bind:group={selectedFlightId} value={flight.flight_id} />
             </td>
