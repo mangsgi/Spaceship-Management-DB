@@ -10,5 +10,5 @@ npm run dev
 
 # database reset
 DROP DATABASE spacedb;
-CREATE DATABASE spacedb OWNER mangsgi TABLESPACE ts_spacedb;
+GRANT ALL PRIVILEGES ON DATABASE spacedb TO common;
 ```

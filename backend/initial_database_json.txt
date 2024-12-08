@@ -1,0 +1,595 @@
+# 조종사
+{
+    "name": "one_pilot",
+    "contact_info": "010-1111-1111",
+    "emergency_contact": "070-1111-1111"
+}
+{
+    "name": "two_pilot",
+    "contact_info": "010-2222-2222",
+    "emergency_contact": "070-2222-2222"
+}
+{
+    "name": "three_pilot",
+    "contact_info": "010-3333-3333",
+    "emergency_contact": "070-3333-3333"
+}
+{
+    "name": "four_pilot",
+    "contact_info": "010-4444-4444",
+    "emergency_contact": "070-4444-4444"
+}
+{
+    "name": "five_pilot",
+    "contact_info": "010-5555-5555",
+    "emergency_contact": "070-5555-5555"
+}
+{
+    "name": "six_pilot",
+    "contact_info": "010-6666-6666",
+    "emergency_contact": "070-6666-6666"
+}
+{
+    "name": "seven_pilot",
+    "contact_info": "010-7777-7777",
+    "emergency_contact": "070-7777-7777"
+}
+{
+    "name": "eight_pilot",
+    "contact_info": "010-8888-8888",
+    "emergency_contact": "070-8888-8888"
+}
+{
+    "name": "nine_pilot",
+    "contact_info": "010-9999-9999",
+    "emergency_contact": "070-9999-9999"
+}
+{
+    "name": "ten_pilot",
+    "contact_info": "010-0000-0000",
+    "emergency_contact": "070-0000-0000"
+}
+
+# 고객
+{
+    "name": "one_customer",
+    "contact_info": "010-1111-1111"
+}
+{
+    "name": "two_customer",
+    "contact_info": "010-2222-2222"
+}
+{
+    "name": "three_customer",
+    "contact_info": "010-3333-3333"
+}
+{
+    "name": "four_customer",
+    "contact_info": "010-4444-4444"
+}
+{
+    "name": "five_customer",
+    "contact_info": "010-5555-5555"
+}
+{
+    "name": "six_customer",
+    "contact_info": "010-6666-6666"
+}
+{
+    "name": "seven_customer",
+    "contact_info": "010-7777-7777"
+}
+{
+    "name": "eight_customer",
+    "contact_info": "010-8888-8888"
+}
+{
+    "name": "nine_customer",
+    "contact_info": "010-9999-9999"
+}
+{
+    "name": "ten_customer",
+    "contact_info": "010-0000-0000"
+}
+
+# 정비사
+{
+    "name": "one_mechanic",
+    "contact_info": "010-1111-1111"
+}
+{
+    "name": "two_mechanic",
+    "contact_info": "010-2222-2222"
+}    
+{
+    "name": "three_mechanic",
+    "contact_info": "010-3333-3333"
+}        
+{
+    "name": "four_mechanic",
+    "contact_info": "010-4444-4444"
+}
+{
+    "name": "five_mechanic",
+    "contact_info": "010-5555-5555"
+}
+{
+    "name": "six_mechanic",
+    "contact_info": "010-6666-6666"
+}
+{
+    "name": "seven_mechanic",
+    "contact_info": "010-7777-7777"
+}
+{
+    "name": "eight_mechanic",
+    "contact_info": "010-8888-8888"
+}
+{
+    "name": "nine_mechanic",
+    "contact_info": "010-9999-9999"
+}
+{
+    "name": "ten_mechanic",
+    "contact_info": "010-0000-0000"
+}
+
+# 관리자
+{
+    "name": "one_admin",
+    "contact_info": "010-1111-1111",
+    "role": "정비 관리자"
+}
+{
+    "name": "two_admin",
+    "contact_info": "010-2222-2222",
+    "role": "비행 관리자"
+}
+{
+    "name": "three_admin",
+    "contact_info": "010-3333-3333",
+    "role": "예약 관리자"
+}
+{
+    "name": "four_admin",
+    "contact_info": "010-4444-4444",
+    "role": "우주선 관리자"
+}
+{
+    "name": "five_admin",
+    "contact_info": "010-5555-5555",
+    "role": "정비 일정 관리자"
+}
+{
+    "name": "six_admin",
+    "contact_info": "010-6666-6666",
+    "role": "예약 시스템 관리자"
+}
+{
+    "name": "seven_admin",
+    "contact_info": "010-7777-7777",
+    "role": "조종사 관리 담당자"
+}
+{
+    "name": "eight_admin",
+    "contact_info": "010-8888-8888",
+    "role": "우주선 데이터 관리자"
+}
+{
+    "name": "nine_admin",
+    "contact_info": "010-9999-9999",
+    "role": "비상 연락 담당자"
+}
+{
+    "name": "ten_admin",
+    "contact_info": "010-0000-0000",
+    "role": "운영 관리자"
+}
+
+# 비행 일정
+{
+    "spaceship_id": 1,
+    "departure_location": "Mercury",
+    "arrival_location": "Vinus",
+    "departure_time": "2025-11-24T10:00:00",
+    "arrival_time": "2026-11-24T12:00:00",
+    "status": "예정"
+}
+{
+    "spaceship_id": 2,
+    "departure_location": "Earth",
+    "arrival_location": "Mars",
+    "departure_time": "2026-11-24T10:00:00",
+    "arrival_time": "2027-11-24T12:00:00",
+    "status": "예정"
+}
+{
+    "spaceship_id": 3,
+    "departure_location": "Earth",
+    "arrival_location": "Vinus",
+    "departure_time": "2019-12-24T01:00:00",
+    "arrival_time": "2024-09-24T12:00:00",
+    "status": "완료"
+}
+{
+    "spaceship_id": 4,
+    "departure_location": "Saturn",
+    "arrival_location": "Neptune",
+    "departure_time": "2027-01-01T08:00:00",
+    "arrival_time": "2027-01-01T20:00:00",
+    "status": "예정"
+}
+{
+    "spaceship_id": 5,
+    "departure_location": "Jupiter",
+    "arrival_location": "Pluto",
+    "departure_time": "2028-01-01T06:00:00",
+    "arrival_time": "2028-01-02T02:00:00",
+    "status": "진행 중"
+}
+{
+    "spaceship_id": 6,
+    "departure_location": "Mars",
+    "arrival_location": "Earth",
+    "departure_time": "2028-03-01T14:00:00",
+    "arrival_time": "2028-03-01T18:00:00",
+    "status": "완료"
+}
+{
+    "spaceship_id": 7,
+    "departure_location": "Neptune",
+    "arrival_location": "Saturn",
+    "departure_time": "2027-02-01T02:00:00",
+    "arrival_time": "2027-02-01T14:00:00",
+    "status": "예정"
+}
+{
+    "spaceship_id": 8,
+    "departure_location": "Pluto",
+    "arrival_location": "Mercury",
+    "departure_time": "2029-04-01T22:00:00",
+    "arrival_time": "2029-04-02T10:00:00",
+    "status": "예정"
+}
+{
+    "spaceship_id": 9,
+    "departure_location": "Earth",
+    "arrival_location": "Venus",
+    "departure_time": "2029-06-01T16:00:00",
+    "arrival_time": "2029-06-01T20:00:00",
+    "status": "완료"
+}
+{
+    "spaceship_id": 10,
+    "departure_location": "Mars",
+    "arrival_location": "Jupiter",
+    "departure_time": "2029-08-01T05:00:00",
+    "arrival_time": "2029-08-01T11:00:00",
+    "status": "예정"
+}
+
+# 우주선
+{
+    "model": "SpaceX Falcon 9 Block 5 Rocket",
+    "manufacture_date": "2024-11-30",
+    "status": "운영 중",
+    "last_maintenance_date": "2024-11-30"
+}
+{
+    "model": "Dragon 2",
+    "manufacture_date": "2020-09-31",
+    "status": "운영 중",
+    "last_maintenance_date": "2020-11-30"
+}
+{
+    "model": "Starship",
+    "manufacture_date": "2019-01-10",
+    "status": "운영 중",
+    "last_maintenance_date": "2022-11-30"
+}
+{
+    "model": "Orion Capsule",
+    "manufacture_date": "2022-11-30",
+    "status": "운영 중",
+    "last_maintenance_date": "2023-06-30"
+}
+{
+    "model": "Apollo 11",
+    "manufacture_date": "2021-05-15",
+    "status": "점검 중",
+    "last_maintenance_date": "2024-03-01"
+}
+{
+    "model": "Enterprise",
+    "manufacture_date": "2020-08-10",
+    "status": "운영 중",
+    "last_maintenance_date": "2023-12-30"
+}
+{
+    "model": "Vostok 1",
+    "manufacture_date": "2020-02-01",
+    "status": "운영 중",
+    "last_maintenance_date": "2024-02-28"
+}
+{
+    "model": "Soyuz",
+    "manufacture_date": "2018-11-12",
+    "status": "점검 중",
+    "last_maintenance_date": "2023-05-30"
+}
+{
+    "model": "Blue Origin",
+    "manufacture_date": "2019-10-20",
+    "status": "운영 중",
+    "last_maintenance_date": "2023-10-15"
+}
+{
+    "model": "Dream Chaser",
+    "manufacture_date": "2017-09-25",
+    "status": "운영 중",
+    "last_maintenance_date": "2024-01-10"
+}
+
+# 조종사 비행일정
+{
+    "flight_id": 1,
+    "pilot_id": 1
+}
+{
+    "flight_id": 2,
+    "pilot_id": 2
+}
+{
+    "flight_id": 3,
+    "pilot_id": 3
+}
+{
+    "flight_id": 4,
+    "pilot_id": 4
+}
+{
+    "flight_id": 5,
+    "pilot_id": 5
+}
+{
+    "flight_id": 6,
+    "pilot_id": 6
+}
+{
+    "flight_id": 7,
+    "pilot_id": 7
+}
+{
+    "flight_id": 8,
+    "pilot_id": 8
+}
+{
+    "flight_id": 9,
+    "pilot_id": 9
+}
+{
+    "flight_id": 10,
+    "pilot_id": 10
+}
+
+# 유지보수 일정
+{
+    "spaceship_id": 1,
+    "task_type": "정기 점검",
+    "priority": 1,
+    "deadline": "2026-11-24",
+    "status": "대기 중"
+}
+{
+    "spaceship_id": 2,
+    "task_type": "수리",
+    "priority": 2,
+    "deadline": "2025-10-24",
+    "status": "대기 중"
+}
+{
+    "spaceship_id": 3,
+    "task_type": "정기 점검",
+    "priority": 3,
+    "deadline": "2024-12-06",
+    "status": "대기 중"
+}
+{
+    "spaceship_id": 4,
+    "task_type": "수리",
+    "priority": 1,
+    "deadline": "2027-01-10",
+    "status": "대기 중"
+}
+{
+    "spaceship_id": 5,
+    "task_type": "정기 점검",
+    "priority": 2,
+    "deadline": "2026-06-20",
+    "status": "대기 중"
+}
+{
+    "spaceship_id": 6,
+    "task_type": "정기 점검",
+    "priority": 3,
+    "deadline": "2025-12-15",
+    "status": "진행 중"
+}
+{
+    "spaceship_id": 7,
+    "task_type": "수리",
+    "priority": 4,
+    "deadline": "2028-05-25",
+    "status": "진행 중"
+}
+{
+    "spaceship_id": 8,
+    "task_type": "정기 점검",
+    "priority": 5,
+    "deadline": "2029-08-30",
+    "status": "대기 중"
+}
+{
+    "spaceship_id": 9,
+    "task_type": "수리",
+    "priority": 6,
+    "deadline": "2029-10-10",
+    "status": "대기 중"
+}
+{
+    "spaceship_id": 10,
+    "task_type": "정기 점검",
+    "priority": 7,
+    "deadline": "2030-02-15",
+    "status": "대기 중"
+}
+
+# 유지보수 일정 수정
+{
+    "task_type": "정기 점검",
+    "priority": 4,
+    "deadline": "2025-11-24",
+    "status": "완료",    
+    "assigned_mechanics": [1, 2, 3]
+}
+{
+    "task_type": "수리",
+    "priority": 3,
+    "deadline": "2028-09-12",
+    "status": "완료",
+    "assigned_mechanics": [4, 5, 6]
+}
+{
+    "task_type": "정기 점검",
+    "priority": 2,
+    "deadline": "2029-11-05",
+    "status": "완료",
+    "assigned_mechanics": [7, 8, 9]
+}
+{
+    "task_type": "수리",
+    "priority": 1,
+    "deadline": "2030-01-20",
+    "status": "완료",
+    "assigned_mechanics": [10, 1, 2]
+}
+
+# 유지보수 기록
+{
+    "task_id": 1,
+    "details": "엔진 오일 교체 및 점검",
+    "parts_used": "엔진 오일, 필터, 렌치 세트",
+    "time_spent": 2.0
+}
+{
+    "task_id": 2,
+    "details": "전자 시스템 오류 수정",
+    "parts_used": "회로 기판, 납땜 장비, 멀티미터",
+    "time_spent": 3.0
+}
+{
+    "task_id": 3,
+    "details": "외부 패널 수리 완료",
+    "parts_used": "패널, 접착제, 전동 드릴",
+    "time_spent": 4.5
+}
+{
+    "task_id": 4,
+    "details": "엔진 점검 및 오일 교체",
+    "parts_used": "엔진 오일, 렌치 세트",
+    "time_spent": 2.5
+}
+{
+    "task_id": 5,
+    "details": "외부 패널 점검 및 교체",
+    "parts_used": "패널, 드릴, 접착제",
+    "time_spent": 3.0
+}
+{
+    "task_id": 6,
+    "details": "전자 시스템 오류 수정",
+    "parts_used": "회로 기판, 납땜 도구, 전압계",
+    "time_spent": 4.0
+}
+{
+    "task_id": 7,
+    "details": "좌석 안전 벨트 수리",
+    "parts_used": "벨트, 스패너 세트",
+    "time_spent": 1.5
+}
+{
+    "task_id": 8,
+    "details": "통신 장비 교체",
+    "parts_used": "안테나, 회로 기판, 케이블",
+    "time_spent": 3.5
+}
+{
+    "task_id": 9,
+    "details": "내부 조명 시스템 교체",
+    "parts_used": "LED 조명, 연결선",
+    "time_spent": 2.0
+}
+{
+    "task_id": 10,
+    "details": "내부 공기 조절 시스템 점검",
+    "parts_used": "필터, 공기 순환 장치",
+    "time_spent": 3.2
+}
+
+# 예약
+{
+    "customer_id": 1,
+    "flight_id": 7,
+    "seat_number": "A08"
+}
+{
+    "customer_id": 2,
+    "flight_id": 7,
+    "seat_number": "B19"
+}
+{
+    "customer_id": 3,
+    "flight_id": 7,
+    "seat_number": "C18"
+}
+{
+    "customer_id": 4,
+    "flight_id": 8,
+    "seat_number": "A10"
+}
+{
+    "customer_id": 5,
+    "flight_id": 9,
+    "seat_number": "B15"
+}
+{
+    "customer_id": 6,
+    "flight_id": 10,
+    "seat_number": "C12"
+}
+{
+    "customer_id": 7,
+    "flight_id": 4,
+    "seat_number": "D01"
+}
+{
+    "customer_id": 8,
+    "flight_id": 5,
+    "seat_number": "A02"
+}
+{
+    "customer_id": 9,
+    "flight_id": 6,
+    "seat_number": "B03"
+}
+{
+    "customer_id": 10,
+    "flight_id": 7,
+    "seat_number": "C05"
+}
+
+# 라이선스
+{
+    라이선스 파일.json
+    라이선스.pdf
+}
